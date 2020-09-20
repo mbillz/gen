@@ -45,6 +45,7 @@ const initHiSynth = async () => {
   });
 
   const hiVol = new Tone.Volume(-12);
+  const hiPanner = new Tone.AutoPanner(0.02);
 
   await hiVerb.generate();
 
@@ -52,7 +53,10 @@ const initHiSynth = async () => {
   hiFilter.connect(hiFeedbackDelay);
   hiFeedbackDelay.connect(hiVerb);
   hiVerb.connect(hiVol);
-  hiVol.connect(masterGain);
+  hiVol.connect(hiPanner);
+  hiPanner.connect(masterGain);
+
+  hiPanner.start();
 
   new Tone.Loop((time) => {
     if (Math.random() > 0.25) {
@@ -105,19 +109,21 @@ const initNoise = () => {
   const noiseLfo = new Tone.LFO({
     type: 'sine',
     frequency: 0.01,
-    min: 1000,
+    min: 5000,
     max: 9000,
   });
   noiseLfo.start();
 
   const noiseDelay = new Tone.FeedbackDelay(0.2, 0.75);
   const noiseVol = new Tone.Volume(-40);
+  const noisePanner = new Tone.AutoPanner(0.05).start();
 
   noiseLfo.connect(noiseFilter.frequency);
   noise.connect(noiseFilter);
   noiseFilter.connect(noiseDelay);
   noiseDelay.connect(noiseVol);
-  noiseVol.connect(masterGain);
+  noiseVol.connect(noisePanner);
+  noisePanner.connect(masterGain);
 };
 
 // interaction
