@@ -1,4 +1,21 @@
 body {
+  display: flex;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.gradient {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.gradient__1 {
   background: linear-gradient(
       45deg,
       rgba(85, 91, 228, 0.8) 0%,
@@ -14,12 +31,33 @@ body {
       rgba(59, 190, 236, 0.8) 0%,
       rgba(59, 190, 236, 0) 20%
     );
-  display: flex;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  align-items: center;
-  justify-content: center;
+}
+
+.gradient__2 {
+  background: linear-gradient(
+      225deg,
+      rgba(37, 0, 164, 0.0001) 0%,
+      rgba(27, 0, 118, 0.5) 100%
+    ),
+    linear-gradient(180deg, #9f83ff 0%, #6e58ff 100%);
+  opacity: 0;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.gradient__1.gradient--animating {
+  animation: fadein 12s ease-in-out infinite alternate;
+}
+
+.gradient__2.gradient--animating {
+  animation: fadein 12s ease-in-out 1s infinite alternate-reverse;
 }
 
 .button {
