@@ -1,0 +1,19 @@
+{
+  "name": "calm-eno",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "dev": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "tone": "^14.7.39"
+  }
+}

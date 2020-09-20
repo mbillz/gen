@@ -1,0 +1,37 @@
+body {
+  background: linear-gradient(
+      45deg,
+      rgba(85, 91, 228, 0.8) 0%,
+      rgba(85, 91, 228, 0) 90%
+    ),
+    linear-gradient(
+      to right,
+      rgba(56, 159, 230, 0.8) 0%,
+      rgba(56, 159, 230, 0) 140%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(59, 190, 236, 0.8) 0%,
+      rgba(59, 190, 236, 0) 20%
+    );
+  display: flex;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  outline: 0;
+}
+
+.button svg {
+  height: 50px;
+  mix-blend-mode: multiply;
+  width: 50px;
+}
