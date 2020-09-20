@@ -66,6 +66,12 @@ body {
   border: 0;
   cursor: pointer;
   outline: 0;
+  opacity: 1;
+  transition: opacity 500ms;
+}
+
+.button__hidden {
+  opacity: 0;
 }
 
 .button svg {

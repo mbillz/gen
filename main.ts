@@ -5,6 +5,7 @@ import * as Tone from 'tone';
 import './styles.css';
 
 const masterGain = new Tone.Gain(0).toDestination();
+Tone.Transport.bpm.value = 70;
 
 // hi synth
 const initHiSynth = async () => {
@@ -54,9 +55,9 @@ const initHiSynth = async () => {
   hiVol.connect(masterGain);
 
   new Tone.Loop((time) => {
-    // if (Math.random() > 0.5) {
-    hiSynth.triggerAttackRelease(getNote(), 0.75, time);
-    // }
+    if (Math.random() > 0.25) {
+      hiSynth.triggerAttackRelease(getNote(), 0.75, time);
+    }
   }, '1n').start(0);
 
   Tone.Transport.start();
@@ -110,7 +111,7 @@ const initNoise = () => {
   noiseLfo.start();
 
   const noiseDelay = new Tone.FeedbackDelay(0.2, 0.75);
-  const noiseVol = new Tone.Volume(-36);
+  const noiseVol = new Tone.Volume(-40);
 
   noiseLfo.connect(noiseFilter.frequency);
   noise.connect(noiseFilter);
@@ -119,10 +120,11 @@ const initNoise = () => {
   noiseVol.connect(masterGain);
 };
 
-// ui
-Tone.Transport.bpm.value = 80;
+// interaction
+const button = document.querySelector('.button');
 
-document.querySelector('.button').addEventListener('click', () => {
+button.addEventListener('click', () => {
+  button.classList.add('button__hidden');
   document
     .querySelectorAll('.gradient')
     .forEach((div) => div.classList.add('gradient--animating'));
