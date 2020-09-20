@@ -59,7 +59,7 @@ const initHiSynth = async () => {
   hiPanner.start();
 
   new Tone.Loop((time) => {
-    if (Math.random() > 0.25) {
+    if (Math.random() > 0.4) {
       hiSynth.triggerAttackRelease(getNote(), 0.75, time);
     }
   }, '1n').start(0);
