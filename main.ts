@@ -1,8 +1,6 @@
-// white noise
+import * as Tone from "tone";
 
-import * as Tone from 'tone';
-
-import './styles.css';
+import "./styles.css";
 
 const masterGain = new Tone.Gain(0).toDestination();
 Tone.Transport.bpm.value = 70;
@@ -16,21 +14,21 @@ const initHiSynth = async () => {
 
   const hiSynth = new Tone.Synth({
     oscillator: {
-      type: 'sine8',
+      type: "sine8",
     },
     envelope: {
       attack: 1,
       release: 1,
     },
   });
-  const hiFilter = new Tone.Filter(200, 'lowpass');
+  const hiFilter = new Tone.Filter(200, "lowpass");
   const hiFilterLfo = new Tone.LFO({
-    type: 'sine',
+    type: "sine",
     min: 100,
     max: 600,
   });
   const hiLfoLfo = new Tone.LFO({
-    type: 'sine',
+    type: "sine",
     frequency: 0.1,
     min: 1,
     max: 5,
@@ -62,7 +60,7 @@ const initHiSynth = async () => {
     if (Math.random() > 0.4) {
       hiSynth.triggerAttackRelease(getNote(), 0.75, time);
     }
-  }, '1n').start(0);
+  }, "1n").start(0);
 
   Tone.Transport.start();
 };
@@ -71,13 +69,13 @@ const initHiSynth = async () => {
 const initLoSynth = async () => {
   const loSynth = new Tone.Oscillator({
     frequency: 65,
-    type: 'sawtooth',
+    type: "sawtooth",
   });
   const loFilter = new Tone.Filter({
-    type: 'lowpass',
+    type: "lowpass",
   });
   const loFilterLfo = new Tone.LFO({
-    type: 'sine',
+    type: "sine",
     frequency: 0.05,
     min: 50,
     max: 300,
@@ -102,12 +100,12 @@ const initLoSynth = async () => {
 
 // noise
 const initNoise = () => {
-  const noise = new Tone.Noise('pink').start();
+  const noise = new Tone.Noise("pink").start();
   const noiseFilter = new Tone.Filter({
-    type: 'highpass',
+    type: "highpass",
   });
   const noiseLfo = new Tone.LFO({
-    type: 'sine',
+    type: "sine",
     frequency: 0.01,
     min: 5000,
     max: 9000,
@@ -127,13 +125,13 @@ const initNoise = () => {
 };
 
 // interaction
-const button = document.querySelector('.button');
+const button = document.querySelector(".button");
 
-button.addEventListener('click', () => {
-  button.classList.add('button__hidden');
+button.addEventListener("click", () => {
+  button.classList.add("button__hidden");
   document
-    .querySelectorAll('.gradient')
-    .forEach((div) => div.classList.add('gradient--animating'));
+    .querySelectorAll(".gradient")
+    .forEach((div) => div.classList.add("gradient--animating"));
   Tone.start();
 
   initNoise();
