@@ -8,7 +8,7 @@ Tone.Transport.bpm.value = 70;
 // hi synth
 const initHiSynth = async () => {
   const getNote = () => {
-    const notes = [220, 247, 262, 294, 330, 392, 440];
+    const notes = ['A3', 'B3', 'C4', 'D4', 'E4', 'G4', 'A4'];
     return notes[(notes.length * Math.random()) | 0];
   };
 
