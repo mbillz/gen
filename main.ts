@@ -152,6 +152,72 @@ const createSolarisDrumkit = () => {
   return Drumkit.createPlayersMap("solaris");
 }
 
+// TODO: Recycle these DOM elements instead of always creating new ones?
+const createBurst = (burstType) => {
+  // const burstType = Math.floor(Math.random() * 3) + 1;
+  const burst = document.createElement('div');
+  burst.classList.add("burst");
+  burst.classList.add(`type-${burstType}`);
+
+  const leftRange = 1000;
+  const left = Math.floor(Math.random() * leftRange) - 0.5 * leftRange - 100;
+  const topRange = 500;
+  const top = Math.floor(Math.random() * topRange) - 0.5 * topRange - 100;
+  burst.style.marginLeft = `${left}px`;
+  burst.style.marginTop = `${top}px`;
+  
+  document.querySelector("body").appendChild(burst);
+}
+
+interface DrumSequence {
+  instrument: Drumkit;
+  steps: number[];
+  burstType: number;
+}
+
+
+const playDrums = (drumkit) => {
+  Tone.Transport.bpm.value = 80;
+
+  // this is my basic implementation of a basic step sequencer.
+  // would be cool to come up with lots of different patterns and styles
+  const sequences: DrumSequence[] = [
+    {
+      instrument: Drumkit.Kick1,
+      steps: [0, 4, 8, 12],
+      burstType: 1,
+    },
+    {
+      instrument: Drumkit.Snare,
+      steps: [2, 6, 11, 14],
+      burstType: 2,
+    },
+    {
+      instrument: Drumkit.Hat2,
+      steps: [0, 4, 5, 8, 9, 13],
+      burstType: 3,
+    },
+  ];
+
+  sequences.forEach((sequence) => {
+    var numNotes = 0;
+    Tone.Transport.scheduleRepeat((time) => {
+      const eightNoteIndexInTwoBars = numNotes % 16;
+      if (sequence.steps.includes(eightNoteIndexInTwoBars)) {
+        Tone.Draw.schedule(() => {
+          createBurst(sequence.burstType);
+        }, time);
+    
+        drumkit[sequence.instrument].start(time);
+      }
+      numNotes += 1;
+    }, "16n");
+  });
+
+  // transport must be started before it starts invoking events
+  Tone.Transport.start();
+};
+
 // interaction
 const button = document.querySelector(".button");
 
@@ -173,24 +239,9 @@ button.addEventListener("click", async () => {
   // should figure out why (the wav files aren't that big)
   await Tone.loaded();
 
-  Tone.Transport.bpm.value = 120;
-
-  Tone.Transport.scheduleRepeat((time) => {
-    solaris[Drumkit.Kick1].start(time);
-  }, "4n");
-
-  // this modular arithmetic is my implementation of a basic step sequencer.
-  // would be cool to come up with lots of different patterns and transition between them?
-  var numEighthNotes = 0;
-  Tone.Transport.scheduleRepeat((time) => {
-    const eightNoteIndexInTwoBars = numEighthNotes % 16;
-    if ([2, 11, 14].includes(eightNoteIndexInTwoBars)) {
-      solaris[Drumkit.Snare].start(time);
-    }
-    numEighthNotes += 1;
-  }, "8n");
-  // transport must be started before it starts invoking events
-  Tone.Transport.start();
+  setTimeout(() => {
+    playDrums(solaris);
+  }, 1000);
 
   masterGain.gain.rampTo(1, 10);
 });
