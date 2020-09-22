@@ -130,7 +130,7 @@ enum Drumkit {
   Snare = "snare",
   Hat1 = "hat-1",
   Hat2 = "hat-2",
-}
+};
 
 namespace Drumkit {
   export function pathToSample(drumkit: Drumkit, drumkitName: string) {
@@ -169,6 +169,8 @@ button.addEventListener("click", async () => {
 
   const solaris = createSolarisDrumkit();
 
+  // this seems to be taking a while to load the drumkit (>3s in Firefox on my laptop)
+  // should figure out why (the wav files aren't that big)
   await Tone.loaded();
 
   Tone.Transport.bpm.value = 120;
@@ -177,6 +179,8 @@ button.addEventListener("click", async () => {
     solaris[Drumkit.Kick1].start(time);
   }, "4n");
 
+  // this modular arithmetic is my implementation of a basic step sequencer.
+  // would be cool to come up with lots of different patterns and transition between them?
   var numEighthNotes = 0;
   Tone.Transport.scheduleRepeat((time) => {
     const eightNoteIndexInTwoBars = numEighthNotes % 16;
