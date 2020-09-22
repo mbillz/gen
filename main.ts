@@ -200,17 +200,17 @@ const playDrums = (drumkit) => {
   ];
 
   sequences.forEach((sequence) => {
-    var numNotes = 0;
+    var noteCounter = 0;
     Tone.Transport.scheduleRepeat((time) => {
-      const eightNoteIndexInTwoBars = numNotes % 16;
-      if (sequence.steps.includes(eightNoteIndexInTwoBars)) {
+      const beat = noteCounter % 16;
+      if (sequence.steps.includes(beat)) {
         Tone.Draw.schedule(() => {
           createBurst(sequence.burstType);
         }, time);
     
         drumkit[sequence.instrument].start(time);
       }
-      numNotes += 1;
+      noteCounter += 1;
     }, "16n");
   });
 
