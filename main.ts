@@ -155,7 +155,7 @@ const createSolarisDrumkit = () => {
 // TODO: Recycle these DOM elements instead of always creating new ones?
 const createBurst = (burstType) => {
   // const burstType = Math.floor(Math.random() * 3) + 1;
-  const burst = document.createElement('div');
+  const burst = document.createElement("div");
   burst.classList.add("burst");
   burst.classList.add(`type-${burstType}`);
 
