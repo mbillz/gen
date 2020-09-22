@@ -159,14 +159,17 @@ const createBurst = (burstType) => {
   burst.classList.add("burst");
   burst.classList.add(`type-${burstType}`);
 
-  const leftRange = 1000;
-  const left = Math.floor(Math.random() * leftRange) - 0.5 * leftRange - 100;
-  const topRange = 500;
-  const top = Math.floor(Math.random() * topRange) - 0.5 * topRange - 100;
+  const adjustment = 100;
+  const left = 300 * burstType - 600 - adjustment;
+  const top = -adjustment;
   burst.style.marginLeft = `${left}px`;
   burst.style.marginTop = `${top}px`;
   
   document.querySelector("body").appendChild(burst);
+
+  setTimeout(() => {
+    burst.remove();
+  }, 2000); // a bit longer than the CSS animation
 }
 
 interface DrumSequence {
