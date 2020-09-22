@@ -8,7 +8,7 @@ Tone.Transport.bpm.value = 70;
 // hi synth
 const initHiSynth = async () => {
   const getNote = () => {
-    const notes = ['A3', 'B3', 'C4', 'D4', 'E4', 'G4', 'A4'];
+    const notes = ["A3", "B3", "C4", "D4", "E4", "G4", "A4"];
     return notes[(notes.length * Math.random()) | 0];
   };
 
@@ -57,7 +57,7 @@ const initHiSynth = async () => {
   hiPanner.start();
 
   new Tone.Loop((time) => {
-    if (Math.random() > 0.4) {
+    if (Math.random() < 0.6) {
       hiSynth.triggerAttackRelease(getNote(), 0.75, time);
     }
   }, "1n").start(0);
@@ -124,19 +124,69 @@ const initNoise = () => {
   noisePanner.connect(masterGain);
 };
 
+enum Drumkit {
+  Kick1 = "kick-1",
+  Kick2 = "kick-2",
+  Snare = "snare",
+  Hat1 = "hat-1",
+  Hat2 = "hat-2",
+}
+
+namespace Drumkit {
+  export function pathToSample(drumkit: Drumkit, drumkitName: string) {
+    return `/samples/drumkit/${drumkitName}/${drumkit}.wav`;
+  }
+
+  export function createPlayersMap(drumkitName: string) {
+    const drums = Object.keys(Drumkit).map(k => Drumkit[k])
+    var players = {};
+    drums.forEach((drum) => {
+      const path = Drumkit.pathToSample(drum, drumkitName);
+      players[drum] = new Tone.Player(path).toDestination();
+    });
+    return players;
+  }
+}
+
+const createSolarisDrumkit = () => {
+  return Drumkit.createPlayersMap("solaris");
+}
+
 // interaction
 const button = document.querySelector(".button");
 
-button.addEventListener("click", () => {
+button.addEventListener("click", async () => {
   button.classList.add("button__hidden");
   document
     .querySelectorAll(".gradient")
     .forEach((div) => div.classList.add("gradient--animating"));
+
   Tone.start();
 
   initNoise();
   initHiSynth();
   initLoSynth();
+
+  const solaris = createSolarisDrumkit();
+
+  await Tone.loaded();
+
+  Tone.Transport.bpm.value = 120;
+
+  Tone.Transport.scheduleRepeat((time) => {
+    solaris[Drumkit.Kick1].start(time);
+  }, "4n");
+
+  var numEighthNotes = 0;
+  Tone.Transport.scheduleRepeat((time) => {
+    const eightNoteIndexInTwoBars = numEighthNotes % 16;
+    if ([2, 11, 14].includes(eightNoteIndexInTwoBars)) {
+      solaris[Drumkit.Snare].start(time);
+    }
+    numEighthNotes += 1;
+  }, "8n");
+  // transport must be started before it starts invoking events
+  Tone.Transport.start();
 
   masterGain.gain.rampTo(1, 10);
 });
