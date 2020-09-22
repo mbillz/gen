@@ -79,3 +79,46 @@ body {
   mix-blend-mode: multiply;
   width: 50px;
 }
+
+.burst {
+  width: 200px;
+  height: 200px;
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  animation: 2s linear burstUp;
+  animation-fill-mode: forwards;
+}
+
+@keyframes burstUp {
+  0% {
+    transform: scale(.2, .2);
+    opacity: 0.6;
+    animation-timing-function: ease-in;
+  }
+
+  1% {
+    transform: scale(1, 1) translate(0px, -50px);
+    opacity: 1.0;
+    animation-timing-function: ease-out;
+  }
+
+  100% {
+    transform: scale(2.0, 2.0) translate(0px, 200px);
+    opacity: 0.0;
+  }
+}
+
+.burst.type-1 {
+  background: radial-gradient(ellipse at center, rgba(220, 47, 2, 100%), rgba(250, 163, 7, 0%), rgba(250, 163, 7, 0%));
+}
+
+.burst.type-2 {
+  background: radial-gradient(ellipse at center, rgba(27, 67, 50, 100%), rgba(64, 145, 108, 0%), rgba(64, 145, 108, 0%));
+}
+
+.burst.type-3 {
+  background: radial-gradient(ellipse at center, rgba(0, 41, 107, 100%), rgba(0, 80, 157, 0%), rgba(0, 80, 157, 0%));
+}

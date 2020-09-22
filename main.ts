@@ -8,7 +8,7 @@ Tone.Transport.bpm.value = 70;
 // hi synth
 const initHiSynth = async () => {
   const getNote = () => {
-    const notes = [220, 247, 262, 294, 330, 392, 440];
+    const notes = ["A3", "B3", "C4", "D4", "E4", "G4", "A4"];
     return notes[(notes.length * Math.random()) | 0];
   };
 
@@ -57,7 +57,7 @@ const initHiSynth = async () => {
   hiPanner.start();
 
   new Tone.Loop((time) => {
-    if (Math.random() > 0.4) {
+    if (Math.random() < 0.6) {
       hiSynth.triggerAttackRelease(getNote(), 0.75, time);
     }
   }, "1n").start(0);
@@ -124,19 +124,126 @@ const initNoise = () => {
   noisePanner.connect(masterGain);
 };
 
+enum Drumkit {
+  Kick1 = "kick-1",
+  Kick2 = "kick-2",
+  Snare = "snare",
+  Hat1 = "hat-1",
+  Hat2 = "hat-2",
+};
+
+namespace Drumkit {
+  export function pathToSample(drumkit: Drumkit, drumkitName: string) {
+    return `/samples/drumkit/${drumkitName}/${drumkit}.wav`;
+  }
+
+  export function createPlayersMap(drumkitName: string) {
+    const drums = Object.keys(Drumkit).map(k => Drumkit[k])
+    var players = {};
+    drums.forEach((drum) => {
+      const path = Drumkit.pathToSample(drum, drumkitName);
+      players[drum] = new Tone.Player(path).toDestination();
+    });
+    return players;
+  }
+}
+
+const createSolarisDrumkit = () => {
+  return Drumkit.createPlayersMap("solaris");
+}
+
+// TODO: Recycle these DOM elements instead of always creating new ones?
+const createBurst = (burstType) => {
+  // const burstType = Math.floor(Math.random() * 3) + 1;
+  const burst = document.createElement("div");
+  burst.classList.add("burst");
+  burst.classList.add(`type-${burstType}`);
+
+  const leftRange = 1000;
+  const left = Math.floor(Math.random() * leftRange) - 0.5 * leftRange - 100;
+  const topRange = 500;
+  const top = Math.floor(Math.random() * topRange) - 0.5 * topRange - 100;
+  burst.style.marginLeft = `${left}px`;
+  burst.style.marginTop = `${top}px`;
+  
+  document.querySelector("body").appendChild(burst);
+}
+
+interface DrumSequence {
+  instrument: Drumkit;
+  steps: number[];
+  burstType: number;
+}
+
+
+const playDrums = (drumkit) => {
+  Tone.Transport.bpm.value = 80;
+
+  // this is my basic implementation of a basic step sequencer.
+  // would be cool to come up with lots of different patterns and styles
+  const sequences: DrumSequence[] = [
+    {
+      instrument: Drumkit.Kick1,
+      steps: [0, 4, 8, 12],
+      burstType: 1,
+    },
+    {
+      instrument: Drumkit.Snare,
+      steps: [2, 6, 11, 14],
+      burstType: 2,
+    },
+    {
+      instrument: Drumkit.Hat2,
+      steps: [0, 4, 5, 8, 9, 13],
+      burstType: 3,
+    },
+  ];
+
+  sequences.forEach((sequence) => {
+    var noteCounter = 0;
+    Tone.Transport.scheduleRepeat((time) => {
+      const beat = noteCounter % 16;
+      if (sequence.steps.includes(beat)) {
+        Tone.Draw.schedule(() => {
+          createBurst(sequence.burstType);
+        }, time);
+    
+        drumkit[sequence.instrument].start(time);
+      }
+      noteCounter += 1;
+    }, "16n");
+  });
+
+  // transport must be started before it starts invoking events
+  Tone.Transport.start();
+};
+
 // interaction
 const button = document.querySelector(".button");
 
-button.addEventListener("click", () => {
+button.addEventListener("click", async () => {
   button.classList.add("button__hidden");
   document
     .querySelectorAll(".gradient")
     .forEach((div) => div.classList.add("gradient--animating"));
+
   Tone.start();
 
   initNoise();
   initHiSynth();
   initLoSynth();
+
+  const solaris = createSolarisDrumkit();
+
+  // this seems to be taking a while to load the drumkit (>3s in Firefox on my laptop)
+  // should figure out why (the wav files aren't that big)
+  await Tone.loaded();
+
+  // was seeing errors when playing right away, where the timing would get backed up
+  // and then it would crash the js because one of the loops fired out of order...
+  setTimeout(() => {
+    playDrums(solaris);
+  }, 1000);
 
   masterGain.gain.rampTo(1, 10);
 });
