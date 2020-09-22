@@ -239,6 +239,8 @@ button.addEventListener("click", async () => {
   // should figure out why (the wav files aren't that big)
   await Tone.loaded();
 
+  // was seeing errors when playing right away, where the timing would get backed up
+  // and then it would crash the js because one of the loops fired out of order...
   setTimeout(() => {
     playDrums(solaris);
   }, 1000);
