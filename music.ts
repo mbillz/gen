@@ -1,4 +1,5 @@
 import * as Tone from "tone";
+import './visuals';
 
 import "./styles.css";
 
@@ -152,32 +153,10 @@ const createSolarisDrumkit = () => {
   return Drumkit.createPlayersMap("solaris");
 }
 
-// TODO: Recycle these DOM elements instead of always creating new ones?
-const createBurst = (burstType) => {
-  // const burstType = Math.floor(Math.random() * 3) + 1;
-  const burst = document.createElement("div");
-  burst.classList.add("burst");
-  burst.classList.add(`type-${burstType}`);
-
-  const adjustment = 100;
-  const left = 300 * burstType - 600 - adjustment;
-  const top = -adjustment;
-  burst.style.marginLeft = `${left}px`;
-  burst.style.marginTop = `${top}px`;
-  
-  document.querySelector("body").appendChild(burst);
-
-  setTimeout(() => {
-    burst.remove();
-  }, 2000); // a bit longer than the CSS animation
-}
-
 interface DrumSequence {
   instrument: Drumkit;
   steps: number[];
-  burstType: number;
 }
-
 
 const playDrums = (drumkit) => {
   Tone.Transport.bpm.value = 80;
@@ -188,17 +167,14 @@ const playDrums = (drumkit) => {
     {
       instrument: Drumkit.Kick1,
       steps: [0, 4, 8, 12],
-      burstType: 1,
     },
     {
       instrument: Drumkit.Snare,
       steps: [2, 6, 11, 14],
-      burstType: 2,
     },
     {
       instrument: Drumkit.Hat2,
       steps: [0, 4, 5, 8, 9, 13],
-      burstType: 3,
     },
   ];
 
@@ -208,7 +184,7 @@ const playDrums = (drumkit) => {
       const beat = noteCounter % 16;
       if (sequence.steps.includes(beat)) {
         Tone.Draw.schedule(() => {
-          createBurst(sequence.burstType);
+          // TODO: Draw something?
         }, time);
     
         drumkit[sequence.instrument].start(time);
@@ -221,15 +197,7 @@ const playDrums = (drumkit) => {
   Tone.Transport.start();
 };
 
-// interaction
-const button = document.querySelector(".button");
-
-button.addEventListener("click", async () => {
-  button.classList.add("button__hidden");
-  document
-    .querySelectorAll(".gradient")
-    .forEach((div) => div.classList.add("gradient--animating"));
-
+const startMusic = async () => {
   Tone.start();
 
   initNoise();
@@ -249,4 +217,6 @@ button.addEventListener("click", async () => {
   }, 1000);
 
   masterGain.gain.rampTo(1, 10);
-});
+};
+
+startMusic();

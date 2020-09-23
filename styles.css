@@ -122,3 +122,8 @@ body {
 .burst.type-3 {
   background: radial-gradient(ellipse at center, rgba(0, 41, 107, 100%), rgba(0, 80, 157, 0%), rgba(0, 80, 157, 0%));
 }
+
+canvas.p5Canvas {
+  position: relative;
+  z-index: 1;
+}
