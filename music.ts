@@ -1,10 +1,9 @@
 import * as Tone from "tone";
-import './visuals';
+import * as visuals from './visuals';
 
 import "./styles.css";
 
 const masterGain = new Tone.Gain(0).toDestination();
-Tone.Transport.bpm.value = 70;
 
 // hi synth
 const initHiSynth = async () => {
@@ -159,7 +158,7 @@ interface DrumSequence {
 }
 
 const playDrums = (drumkit) => {
-  Tone.Transport.bpm.value = 80;
+  Tone.Transport.bpm.value = 40;
 
   // this is my basic implementation of a basic step sequencer.
   // would be cool to come up with lots of different patterns and styles
@@ -184,7 +183,15 @@ const playDrums = (drumkit) => {
       const beat = noteCounter % 16;
       if (sequence.steps.includes(beat)) {
         Tone.Draw.schedule(() => {
-          // TODO: Draw something?
+          if (sequence.instrument === Drumkit.Kick1) {
+            visuals.kickHit();
+          }
+          if (sequence.instrument === Drumkit.Snare) {
+            visuals.snareHit();
+          }
+          if (sequence.instrument === Drumkit.Hat2) {
+            visuals.hatHit();
+          }
         }, time);
     
         drumkit[sequence.instrument].start(time);
