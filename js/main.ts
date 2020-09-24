@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 
-import "./styles.css";
+import "../css/styles.css";
 
 const masterGain = new Tone.Gain(0).toDestination();
 Tone.Transport.bpm.value = 70;
@@ -130,7 +130,7 @@ enum Drumkit {
   Snare = "snare",
   Hat1 = "hat-1",
   Hat2 = "hat-2",
-};
+}
 
 namespace Drumkit {
   export function pathToSample(drumkit: Drumkit, drumkitName: string) {
@@ -138,7 +138,7 @@ namespace Drumkit {
   }
 
   export function createPlayersMap(drumkitName: string) {
-    const drums = Object.keys(Drumkit).map(k => Drumkit[k])
+    const drums = Object.keys(Drumkit).map((k) => Drumkit[k]);
     var players = {};
     drums.forEach((drum) => {
       const path = Drumkit.pathToSample(drum, drumkitName);
@@ -150,7 +150,7 @@ namespace Drumkit {
 
 const createSolarisDrumkit = () => {
   return Drumkit.createPlayersMap("solaris");
-}
+};
 
 // TODO: Recycle these DOM elements instead of always creating new ones?
 const createBurst = (burstType) => {
@@ -164,20 +164,19 @@ const createBurst = (burstType) => {
   const top = -adjustment;
   burst.style.marginLeft = `${left}px`;
   burst.style.marginTop = `${top}px`;
-  
+
   document.querySelector("body").appendChild(burst);
 
   setTimeout(() => {
     burst.remove();
   }, 2000); // a bit longer than the CSS animation
-}
+};
 
 interface DrumSequence {
   instrument: Drumkit;
   steps: number[];
   burstType: number;
 }
-
 
 const playDrums = (drumkit) => {
   Tone.Transport.bpm.value = 80;
@@ -210,7 +209,7 @@ const playDrums = (drumkit) => {
         Tone.Draw.schedule(() => {
           createBurst(sequence.burstType);
         }, time);
-    
+
         drumkit[sequence.instrument].start(time);
       }
       noteCounter += 1;
