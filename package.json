@@ -2,7 +2,7 @@
   "name": "calm-eno",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "js/main.ts",
   "scripts": {
     "dev": "parcel index.html magenta.html",
     "build": "parcel build index.html magenta.html"
@@ -15,6 +15,9 @@
     "typescript": "^4.0.3"
   },
   "dependencies": {
-    "tone": "^14.7.39"
+    "tone": "^14.7.39",
+    "@magenta/music": "^1.20.0",
+    "file-saver": "^2.0.2",
+    "browser-process-hrtime": "^1.0.0"
   }
 }
