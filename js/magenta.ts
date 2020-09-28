@@ -20,16 +20,15 @@
 import * as tf from '@tensorflow/tfjs';
 
 import * as mm from '@magenta/music';
-import {Performance} from './common'
+import {performance} from './magenta_compat/global'
 
-import {CHECKPOINTS_DIR, TRIO_EXAMPLE, writeMemory} from './common';
-import {DRUM_SEQS, MEL_A_QUARTERS, MEL_TEAPOT, MEL_TWINKLE} from './common';
-import {writeNoteSeqs, writeTimer} from './common';
+import {CHECKPOINTS_DIR, TRIO_EXAMPLE, writeMemory} from './magenta_compat/common';
+import {DRUM_SEQS, MEL_A_QUARTERS, MEL_TEAPOT, MEL_TWINKLE} from './magenta_compat/common';
+import {writeNoteSeqs, writeTimer} from './magenta_compat/common';
 
-declare const performance: Performance;
 const sequences = mm.sequences;
 
-mm.logging.verbosity = mm.logging.Level.DEBUG;
+// mm.logging.verbosity = mm.logging.Level.DEBUG;
 
 const DRUMS_CKPT = `${CHECKPOINTS_DIR}/music_vae/drums_2bar_hikl_small`;
 const DRUMS_NADE_CKPT = `${CHECKPOINTS_DIR}/music_vae/drums_2bar_nade_9_q2`;

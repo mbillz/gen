@@ -17,6 +17,7 @@
   "dependencies": {
     "tone": "^14.7.39",
     "@magenta/music": "^1.20.0",
-    "file-saver": "^2.0.2"
+    "file-saver": "^2.0.2",
+    "browser-process-hrtime": "^1.0.0"
   }
 }

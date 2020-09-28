@@ -17,8 +17,11 @@
 
 import {saveAs} from 'file-saver/src/FileSaver';
 import * as mm from '@magenta/music';
-import {sequences} from '@magenta/music/node/core/index';
-import {performance} from '@magenta/music/node/core/compat/global';
+import {performance} from './global'
+
+const isNode = typeof global !== 'undefined';
+
+const sequences = mm.sequences;
 
 export const CHECKPOINTS_DIR =
     'https://storage.googleapis.com/magentadata/js/checkpoints';
@@ -598,11 +601,4 @@ export function notesMatch(
     }
   }
   return true;
-}
-
-export interface Performance {
-    now(): number;
-    timing: {
-        navigationStart: number;
-    };
 }
