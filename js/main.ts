@@ -1,5 +1,5 @@
 import * as visuals from './visuals';
 
-import "./styles.css";
+import "../css/styles.css";
 
 visuals.start();

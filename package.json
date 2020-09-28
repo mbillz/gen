@@ -4,8 +4,8 @@
   "description": "",
   "main": "js/main.ts",
   "scripts": {
-    "dev": "parcel index.html magenta.html",
-    "build": "parcel build index.html magenta.html"
+    "dev": "parcel index.html",
+    "build": "parcel build index.html"
   },
   "author": "",
   "license": "ISC",
