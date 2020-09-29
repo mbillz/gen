@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { isLineBreak } from 'typescript';
 
 var startTime;
 window.setup = () => {
