@@ -6,10 +6,6 @@ var oldY;
 var bezierX;
 var bezierY;
 
-const numColorsPerPath = 4;
-var hues = _.range(numColorsPerPath);
-var saturations = _.range(numColorsPerPath);
-
 const numNoiseUpdatesPerFrame = 7000;
 
 // Offset is going to keep increasing.
@@ -61,10 +57,6 @@ window.setup = () => {
 
   bezierX = new NoisyBezier(0.01, 10);
   bezierY = new NoisyBezier(0.01, 10);
-  for (var i = 0; i < hues.length; i++) {
-    hues[i] = new NoisyBezier(random(0.001, 0.009), 1.0);
-    saturations[i] = new NoisyBezier(random(0.003, 0.01), 1.0);
-  }
 };
 
 window.draw = () => {
@@ -74,8 +66,7 @@ window.draw = () => {
     // noise value for the current position
     var n = noise(oldX/50 + bezierX.val, oldY/50 + bezierY.val, offset);
 
-    var which = Math.floor(n * hues.length);
-    stroke(hues[which].val, saturations[which].val, 1, 0.05);
+    stroke(mouseX / displayWidth, mouseY / displayHeight, 1, 0.05);
     // angle
     var a = n * TWO_PI + 20 * noise(offset);
     // distance
@@ -101,10 +92,6 @@ window.draw = () => {
   }
   offset += 0.0005;
   
-  for (var i = 0; i<hues.length; i++) {
-    hues[i].update();
-    saturations[i].update();
-  }
   bezierX.update();
   bezierY.update();
 };
