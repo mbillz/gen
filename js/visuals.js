@@ -31,7 +31,7 @@ class WormDirector {
   }
 
   getNoise(key, noiseOffsetIndex, timeElapsed) {
-    const noiseOffset = this.noiseOffsets[0] || 0;
+    const noiseOffset = this.noiseOffsets[noiseOffsetIndex] || 0;
     const velocity = this.velocities[key] || 0;
     const factor = (velocity * timeElapsed / 1000) + noiseOffset;
     return noise(factor);
@@ -60,7 +60,7 @@ class WormDirector {
   }
 }
 
-const numWorms = 30;
+const numWorms = 3;
 const wormDirectors = _.map(_.range(numWorms), () => {
   return new WormDirector();
 });
