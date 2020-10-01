@@ -1,5 +1,5 @@
 import * as Tone from "tone";
-import * as visuals from './visuals';
+import * as visuals from '../visuals';
 
 import "./styles.css";
 
