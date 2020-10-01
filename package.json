@@ -2,7 +2,7 @@
   "name": "calm-eno",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "js/main.ts",
   "scripts": {
     "dev": "parcel index.html",
     "build": "parcel build index.html"
@@ -15,7 +15,9 @@
     "typescript": "^4.0.3"
   },
   "dependencies": {
-    "lodash": "^4.17.20",
-    "tone": "^14.7.39"
+    "tone": "^14.7.39",
+    "@magenta/music": "^1.20.0",
+    "file-saver": "^2.0.2",
+    "browser-process-hrtime": "^1.0.0"
   }
 }
