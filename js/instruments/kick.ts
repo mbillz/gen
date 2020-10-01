@@ -1,6 +1,7 @@
 import { MembraneSynth, Loop } from 'tone';
 
-export const kickInst = new MembraneSynth({
+const kick = new MembraneSynth({
+  volume: -6,
   envelope: {
     attack: 0.1,
     decay: 0.2,
@@ -9,6 +10,6 @@ export const kickInst = new MembraneSynth({
 
 export const loopKick = () => {
   new Loop((time) => {
-    kickInst.triggerAttackRelease('E1', time);
+    kick.triggerAttackRelease('E1', time);
   }, '2n').start(0);
 };
