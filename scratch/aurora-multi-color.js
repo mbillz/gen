@@ -9,9 +9,6 @@ let p2 = { x: -100, y: 300 };
 let p3 = { x: 900, y: 300 };
 let p4 = { x: 250, y: -200 };
 
-let x_adjust = 10;
-let y_adjust = 60;
-
 
 class auroraLine { 
     constructor(points, color, endColor) {
