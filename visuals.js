@@ -61,18 +61,22 @@ class Stars {
       this.maxAlpha = maxStarAlpha;
       this.minAlpha = minStarAlpha;
       this.starPoints = this.createStars();
-      
+
+      this.twinkleSpeed = 0.001 * Math.random() + 0.0005;
     }
 
     createStars() {
+      const randomMinusOneToOne = () => {
+        return 2 * (Math.random() - 0.5);
+      };
+
       let curStarPoints = []
       for (var i=0; i < this.nStars; i++) {
-        // let side = round(Math.random()) == 0 ? 1 : -1;
-        let x = width * 3 * Math.random();
-        let y = height * 3  * Math.random();
+        // multiply by 1.5 so that our star grid is larger than the bounding box
+        // this avoids any "holes" as the scene rotates about the origin
+        let x = width * 1.5 * randomMinusOneToOne();
+        let y = height * 1.5 * randomMinusOneToOne();
         let r = this.minSize + (this.maxSize - this.minSize) * Math.random();
-        // let a = this.minAlpha + (this.maxAlpha - this.minAlpha) * Math.random();
-        // let starPoint = {x: x, y: y, r: r, a: a};
         let starPoint = {x: x, y: y, r: r};
         curStarPoints.push(starPoint);
       }
@@ -83,7 +87,11 @@ class Stars {
       for (var i=0; i < this.nStars; i++) {
         let curPoints = this.starPoints[i];
         let c = color(255, 255, 255);
-        let a = this.minAlpha + (this.maxAlpha - this.minAlpha) * Math.random();
+
+        let noiseOffset = 1000 * i;
+        let noiseFactor = noiseOffset + timeElapsed * this.twinkleSpeed;
+        let a = this.minAlpha + (this.maxAlpha - this.minAlpha) * noise(noiseFactor);
+
         c.setAlpha(a);
         fill(c);
         noStroke();
@@ -118,23 +126,31 @@ class Stars {
 
 var stars;
 var purpleLine;
+var startTime;
+var timeElapsed;
+
+var loopCount = 0;
 
 window.setup = () => {
-    createCanvas(800, 500)
+    createCanvas(displayWidth, displayHeight);
     purpleLine = new auroraLine([p1, p2, p3, p4], color(purple), color(green));
-    stars = new Stars(numStars, 1, 2);
-    originPoint = {x: width / 2, y: height / 2};
+    stars = new Stars(numStars, 1, 5);
+    originPoint = {x: 0.75 * width, y: 0.5 * height};
     console.log(stars.starPoints.slice(0, 50));
+
+    startTime = Date.now();
+    timeElapsed = Date.now() - startTime;  
 };
 
 window.draw = () => {
+    timeElapsed = Date.now() - startTime;
+
     background(0);
     stars.updateStars();
     stars.drawStars();
     purpleLine.drawEnd(true);
-
 }
 
 export function start() {
-console.log('starting visuals');
+  console.log('starting visuals');
 }
