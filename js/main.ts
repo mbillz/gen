@@ -2,6 +2,7 @@ import * as Tone from 'tone';
 import 'minireset.css';
 
 import '../css/styles.css';
+// import './vfx';
 import { loopKick } from './instruments/kick';
 import { seqPad } from './instruments/pad';
 import { BPM } from './utils/time';
