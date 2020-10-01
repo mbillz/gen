@@ -2,26 +2,22 @@ import * as Tone from 'tone';
 import 'minireset.css';
 
 import '../css/styles.css';
-// import './vfx';
-import { loopKick } from './instruments/kick';
-import { seqPad } from './instruments/pad';
 import { BPM } from './utils/time';
-import { seqArp } from './instruments/hiArp';
-import { seqSynth } from './instruments/hiSynth';
+import { loopNoise } from './instruments/noise';
+import { startVox } from './instruments/vox';
 
 const initInst = () => {
   Tone.Transport.start();
-  loopKick();
-  seqPad();
-  seqArp();
-  seqSynth();
+  loopNoise();
+  startVox();
 };
 
 Tone.Transport.bpm.value = BPM;
 
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', async (e) => {
   if (e.which === 13) {
     Tone.start();
+    await Tone.loaded();
     initInst();
   }
 });
