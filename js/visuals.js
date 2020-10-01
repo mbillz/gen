@@ -1,118 +1,151 @@
 import _ from 'lodash';
 
-class ForceFieldDot {
-  constructor(x, y) {
-    this.home = createVector(x, y);
-
-    const xDisplacement = 0 * Math.random();
-    const yDisplacement = 0 * Math.random();
-    this.position = createVector(x + xDisplacement, y + yDisplacement);
-
-    this.velocity = createVector(0, 0);
-    this.force = createVector(0, 0);
-
-    this.springHardness = 0.01 * Math.random() + 0.005;
-  }
-
-  get springForce() {
-    // force proportional to negative displacement from home
-    return this.home.copy().sub(this.position).mult(this.springHardness);
-  }
-
-  get netForce() {
-    return this.force.copy().add(this.springForce);
-  }
-
-  update() {
-    this.velocity.add(this.netForce);
-    this.position.add(this.velocity);
-    this.force.mult(0.5);
-  }
-
-  draw() {
-    stroke('red');
-    strokeWeight(10);
-    point(displayWidth * this.position.x, displayHeight * this.position.y);
-  }
-
-  disruptionAt(clickPoint) {
-    console.log('clickPoint is', clickPoint);
-    const distance = clickPoint.dist(this.position);
-    console.log('distance is', distance);
-    const forceFactor = Math.pow(distance, -2); // inverse square law
-    console.log('forceFactor is', forceFactor);
-    this.force = this.position.copy().sub(clickPoint).mult(0.0003 * forceFactor);
-  }
-}
-
-class ForceFieldDots {
+class WormDirector {
   constructor() {
-    this.numRows = 10;
-    this.numColumns = 10;
+    // all velocities represented in units per second
+    this.velocities = {
+      controlPoints: 0, // will get bumped
+      anchorPoints: 0, // will get bumped
+      lineWidth: 0, // will get bumped
 
-    this.dots = _.map(_.range(this.numRows), (rowIndex) => {
-      return _.map(_.range(this.numColumns), (colIndex) => {
-        const homeX = (rowIndex + 0.5) / this.numRows;
-        const homeY = (colIndex + 0.5) / this.numColumns;
-        return new ForceFieldDot(homeX, homeY);
-      });
+      hue: 0.1,
+      saturation: 0.1,
+    };
+
+    // the noise offsets are a "bucket" of random offsets 1 -> 1000
+    // we use a unique offset for each modulating value, to assign it a distinct
+    // "region" of the Perlin Noise space from which to move
+    this.noiseOffsets = _.map(_.range(100), () => {
+      return 10000 * Math.random();
     });
+
+    // will add a cover with this opacity every frame
+    this.ghostingDecayRate = 0.0375;
+
+    this.previousFactor = 0;
+    this.previousResult = 0;
   }
 
-  applyFnToAllPoints(fn) {
-    _.forEach(this.dots, (row) => {
-      _.forEach(row, (point) => {
-        fn(point);
-      });
-    });
+  getLineStepAlpha(stepIndex, numSteps) {
+    return 1 - (stepIndex / numSteps);
   }
 
-  update() {
-    this.applyFnToAllPoints((point) => {
-      point.update();
-    });
+  getNoise(key, noiseOffsetIndex, timeElapsed) {
+    const noiseOffset = this.noiseOffsets[noiseOffsetIndex] || 0;
+    const velocity = this.velocities[key] || 0;
+    const factor = (velocity * timeElapsed / 1000) + noiseOffset;
+    return noise(factor);
   }
 
-  draw() {
-    this.applyFnToAllPoints((point) => {
-      point.draw();
-    });
+  getRandomRandomAverageZero() {
+    return 2 * Math.random() - 1;
   }
 
-  causeForceDisruption(mouseX, mouseY) {
-    this.applyFnToAllPoints((point) => {
-      const clickPoint = createVector(mouseX, mouseY);
-      point.disruptionAt(clickPoint);
+  velocityBumpByKey(key) {
+    switch (key) {
+      case 'controlPoints': return 0.2;
+      case 'anchorPoints': return 0.05;
+      case 'lineWidth': return 0.2;
+      default: return 0;
+    }
+  }
+
+  bumpForMusicalEvent(musicalIntensity = 1.0) {
+    this.velocities = _.mapValues(this.velocities, (oldVelocity, key) => {
+      const multiplyFactor = this.velocityBumpByKey(key);
+      // musicalIntensity is hard to notice when the spread is already random
+      // TODO: make this more visually sensitive to musicalIntensity?
+      return oldVelocity + multiplyFactor * musicalIntensity * this.getRandomRandomAverageZero();
     });
   }
 }
 
-var dots;
+const numWorms = 3;
+const wormDirectors = _.map(_.range(numWorms), () => {
+  return new WormDirector();
+});
+
+var startTime;
 window.setup = () => {
   createCanvas(displayWidth, displayHeight);
   smooth();
-  background(0);
+  // background(0);
+  colorMode(HSB, 1);
   noFill();
 
-  dots = new ForceFieldDots();
+  startTime = Date.now();
+
+  _.forEach(wormDirectors, (wormDirector) => {
+    wormDirector.bumpForMusicalEvent();
+  });
 };
 
 var numDraws = 0;
 window.draw = () => {
-  background(0, 0, 0, 255 * 0.05);
+  /* First, get all of our constants that determine the look and feel of the animation ready */
+  const timeElapsed = Date.now() - startTime;
 
-  // console.log("WILL DO DRAW", numDraws + 1);
-  dots.update();
-  dots.draw(displayWidth, displayHeight);
+  clear();
+
+  _.forEach(wormDirectors, (wormDirector, index) => {
+    /* keep each worm in its own "lane" */
+    const xMin = (displayWidth / numWorms) * index;
+    const xSpread = (displayWidth / numWorms);
+
+    const yMin = 0;
+    const yMax = (() => {
+      if (index === 0) {
+        return 0.3 * displayHeight;
+      }
+      return 0.6 * displayHeight;
+    })();
+    const ySpread = yMax - yMin;
+
+    const controlX1 = xMin + xSpread * wormDirector.getNoise('controlPoints', 1, timeElapsed);
+    const controlY1 = yMin + ySpread * wormDirector.getNoise('controlPoints', 2, timeElapsed);
+    const controlX2 = xMin + xSpread * wormDirector.getNoise('controlPoints', 3, timeElapsed);
+    const controlY2 = yMin + ySpread * wormDirector.getNoise('controlPoints', 4, timeElapsed);
+  
+    const anchorX1 = xMin + xSpread * wormDirector.getNoise('anchorPoints', 5, timeElapsed);
+    const anchorY1 = yMin + ySpread * wormDirector.getNoise('anchorPoints', 6, timeElapsed);
+    const anchorX2 = xMin + xSpread * wormDirector.getNoise('anchorPoints', 7, timeElapsed);
+    const anchorY2 = yMin + ySpread * wormDirector.getNoise('anchorPoints', 8, timeElapsed);
+  
+    const hue = wormDirector.getNoise('hue', 9, timeElapsed);
+    const saturation = 0.3 * wormDirector.getNoise('saturation', 10, timeElapsed) + 0.7;
+  
+    // blur the line to give it an ethereal feeling
+    const numBlurringSteps = 25;
+    const lineWidth = 75 * wormDirector.getNoise('lineWidth', 11, timeElapsed);
+    const lineWidthPerStep = lineWidth / numBlurringSteps;
+  
+    /* Now we actually do the drawing, using those constants */
+  
+    for (var i = 0; i < numBlurringSteps; i++) {
+      const alpha = wormDirector.getLineStepAlpha(i, numBlurringSteps);
+      strokeWeight(lineWidthPerStep * i);
+      stroke(hue, saturation, 1, alpha);
+      bezier(anchorX1, anchorY1, controlX1, controlY1, controlX2, controlY2, anchorX2, anchorY2);
+    }
+  });
 
   numDraws++;
-  if (numDraws > 100) {
-    // noLoop();
-  }
+  // if (numDraws > 200) {
+  //   noLoop();
+  // }
 };
 
-window.mouseClicked = () => {
-  dots.causeForceDisruption(mouseX / displayWidth, mouseY / displayHeight);
+window.keyPressed = () => {
+  const aKey = 65;
+  const sKey = 83;
+  const dKey = 68;
+  if (keyCode === aKey) {
+    wormDirectors[0].bumpForMusicalEvent();
+  } else if (keyCode === sKey) {
+    wormDirectors[1].bumpForMusicalEvent();
+  } else if (keyCode === dKey) {
+    wormDirectors[2].bumpForMusicalEvent();
+  }
 };
 
 export function start() {

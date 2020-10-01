@@ -5,6 +5,8 @@ body {
   padding: 0;
   align-items: center;
   justify-content: center;
+
+  overflow: hidden;
 }
 
 .gradient {
@@ -121,4 +123,18 @@ body {
 
 .burst.type-3 {
   background: radial-gradient(ellipse at center, rgba(0, 41, 107, 100%), rgba(0, 80, 157, 0%), rgba(0, 80, 157, 0%));
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
 }
