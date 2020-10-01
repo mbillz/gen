@@ -4,12 +4,6 @@ let purple = '#5402f7';
 let green = '#22e633';
 let yellow = '#ffff1f';
 
-var originPoint;
-let rotationAngle = .001;
-let numStars = 10000;
-let maxStarAlpha = 250;
-let minStarAlpha = 0;
-
 let p1 = { x: 20, y: 800 };
 let p2 = { x: -100, y: 300 };
 let p3 = { x: 900, y: 300 };
@@ -52,14 +46,18 @@ class auroraLine {
     }
 };
 
+var originPoint;
+let rotationAngle = .001;
+let numStars = 10000;
+
 
 class Stars { 
     constructor(nStars, minSize, maxSize) {
       this.nStars = nStars;
       this.minSize = minSize;
       this.maxSize = maxSize;
-      this.maxAlpha = maxStarAlpha;
-      this.minAlpha = minStarAlpha;
+      this.maxAlpha = 255;
+      this.minAlpha = 120;
       this.starPoints = this.createStars();
       
     }
@@ -67,13 +65,12 @@ class Stars {
     createStars() {
       let curStarPoints = []
       for (var i=0; i < this.nStars; i++) {
-        // let side = round(Math.random()) == 0 ? 1 : -1;
-        let x = width * 3 * Math.random();
-        let y = height * 3  * Math.random();
+        let side = round(Math.random()) == 0 ? 1 : -1;
+        let x = width * 2 * side * Math.random();
+        let y = height * 3 * side * Math.random();
         let r = this.minSize + (this.maxSize - this.minSize) * Math.random();
-        // let a = this.minAlpha + (this.maxAlpha - this.minAlpha) * Math.random();
-        // let starPoint = {x: x, y: y, r: r, a: a};
-        let starPoint = {x: x, y: y, r: r};
+        let a = this.minAlpha + (this.maxAlpha - this.minAlpha) * Math.random();
+        let starPoint = {x: x, y: y, r: r, a: a};
         curStarPoints.push(starPoint);
       }
       return curStarPoints;
@@ -83,8 +80,7 @@ class Stars {
       for (var i=0; i < this.nStars; i++) {
         let curPoints = this.starPoints[i];
         let c = color(255, 255, 255);
-        let a = this.minAlpha + (this.maxAlpha - this.minAlpha) * Math.random();
-        c.setAlpha(a);
+        c.setAlpha(curPoints.a);
         fill(c);
         noStroke();
         circle(curPoints.x, curPoints.y, curPoints.r);
@@ -124,7 +120,6 @@ window.setup = () => {
     purpleLine = new auroraLine([p1, p2, p3, p4], color(purple), color(green));
     stars = new Stars(numStars, 1, 2);
     originPoint = {x: width / 2, y: height / 2};
-    console.log(stars.starPoints.slice(0, 50));
 };
 
 window.draw = () => {
