@@ -14,7 +14,7 @@ const vox1Pan = new Panner(-1).toDestination();
 
 const vox1Player = new Player({
   url: vox1,
-  volume: -16,
+  volume: -8,
   onstop: playRandomVox,
 }).connect(vox1Pan);
 
@@ -22,13 +22,13 @@ const vox2Pan = new Panner(1).toDestination();
 
 const vox2Player = new Player({
   url: vox2,
-  volume: -16,
+  volume: -8,
   onstop: playRandomVox,
 }).connect(vox2Pan);
 
 const vox3Player = new Player({
   url: vox3,
-  volume: -16,
+  volume: -8,
   onstop: () => playRandomVox,
 }).toDestination();
 
