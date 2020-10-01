@@ -52,7 +52,7 @@ class RainStreak {
     strokeWeight(this.thickness);
     const numGhostLines = 10;
     for (var i = 0; i < numGhostLines; i++) {
-      const alpha = this.alpha * (1 - i / numGhostLines);
+      const alpha = this.alpha * Math.pow(0.8, i);
       const lineTop = this.top - i * this.velocity;
       const color = this.palletteColor(alpha);
   
