@@ -17,9 +17,10 @@ const initInst = () => {
   seqSynth();
 };
 
+Tone.Transport.bpm.value = BPM;
+
 document.addEventListener('keydown', (e) => {
   if (e.which === 13) {
-    Tone.Transport.bpm.value = BPM;
     Tone.start();
     initInst();
   }
