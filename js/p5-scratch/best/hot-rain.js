@@ -3,6 +3,8 @@ import { isLineBreak } from 'typescript';
 
 var timeElapsed;
 
+const bgColor = '#370617';
+
 class RainStreak {
   constructor() {
 
@@ -31,6 +33,15 @@ class RainStreak {
       color('#dc2f02'),
       color('#f48c06'),
       color('#ffba08'),
+    ];
+
+    // reds and oranges
+    this.pallette = [
+      color('#132a13'),
+      color('#31572c'),
+      color('#4f772d'),
+      color('#90a955'),
+      color('#ecf39e'),
     ];
 
     this.reset();
@@ -95,7 +106,7 @@ var startTime;
 window.setup = () => {
   createCanvas(displayWidth, displayHeight);
   smooth();
-  background('#370617');
+  background(bgColor);
   noFill();
 
   rainStreaks = _.map(_.range(numRainStreaks), () => {
@@ -109,7 +120,7 @@ var numDraws = 0;
 window.draw = () => {
   timeElapsed = Date.now() - startTime;
 
-  const backgroundColor = color('#370617');
+  const backgroundColor = color(bgColor);
   backgroundColor.setAlpha(255 * 0.05);
   background(backgroundColor);
 
