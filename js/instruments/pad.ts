@@ -2,14 +2,14 @@ import { PolySynth, Loop, Filter, LFO } from 'tone';
 import { getSecondsFromBPM } from '../utils/time';
 
 const pad = new PolySynth({
-  volume: -14,
+  volume: -15,
 });
 const filter = new Filter({ type: 'lowpass' }).toDestination();
 const lfo = new LFO({
   type: 'sine',
   frequency: getSecondsFromBPM(4),
-  min: 50,
-  max: 400,
+  min: 300,
+  max: 800,
 });
 lfo.connect(filter.frequency);
 lfo.start();

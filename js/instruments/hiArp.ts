@@ -1,7 +1,7 @@
 import { Filter, Sequence, PluckSynth } from 'tone';
 
 const plucker = new PluckSynth({
-  volume: -12,
+  volume: -18,
 });
 const filter = new Filter({
   type: 'highpass',
