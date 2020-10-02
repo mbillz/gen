@@ -67,13 +67,14 @@ const auroraSwellSinusoidPeriodY = 5000;
 
 /* Mountains */
 const nMountains = 4;
-const nPoints = 200;
-const mountainStart = 0.45;  // fraction of height
-const mountainEnd = 0.3; // fraction of height
+const nPoints = 300;
+const mountainStart = 0.6;  // fraction of height
+const mountainEnd = 0.4; // fraction of height
 const amplitudeStart = 0.2;
 const amplitudeEnd = 0.5;
 const stepStart = 0.05;
 const stepEnd = 0.01;
+const mountainAlpha = 100;
 
 var stars;
 var aurora;
@@ -359,7 +360,9 @@ class Mountains {
     var firstColor = lerpColor(startColor, endColor, 0.8);
     for (var i=nMountains; i>=0; i--) {
       var ratio = i/nMountains
-      fill(lerpColor(endColor, firstColor, ratio));
+      let actualColor = lerpColor(endColor, firstColor, ratio)
+      actualColor.setAlpha(mountainAlpha);
+      fill(actualColor);
       noStroke();
       beginShape();
       vertex(0, height);
