@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "browserslist": "^4.14.5",
+    "lodash": "^4.17.20",
     "minireset.css": "0.0.6",
     "p5": "^1.1.9",
     "tone": "^14.7.39"

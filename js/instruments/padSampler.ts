@@ -8,6 +8,7 @@ import padAb4 from '../../static/samples/pads/pad_Ab4.mp3';
 import padF3 from '../../static/samples/pads/pad_F3.mp3';
 import padF4 from '../../static/samples/pads/pad_F4.mp3';
 import padG4 from '../../static/samples/pads/pad_G4.mp3';
+
 import { getSecondsFromBPM } from '../utils/time';
 import { getRandomNextKey } from '../utils/getNextKey';
 
@@ -31,7 +32,6 @@ export const seqPadSampler = () => {
   new Sequence(
     (time, note) => {
       const nextNote = getRandomNextKey(currentNote);
-      console.log(nextNote);
       pad.triggerAttack(getRandomNextKey(nextNote));
     },
     ['C3'],
