@@ -9,15 +9,17 @@ import { seqPadSampler } from './instruments/padSampler';
 import { loopKick } from './instruments/kick';
 import { loopBells } from './instruments/bells';
 import * as visuals from './visuals';
+import { triggerArp } from './instruments/hiArp';
 
 const initInst = () => {
   Tone.Transport.start();
   visuals.start();
-  loopNoise();
-  startVox();
-  seqPadSampler();
-  loopKick();
-  loopBells();
+  // loopNoise();
+  // startVox();
+  // seqPadSampler();
+  // loopKick();
+  // loopBells();
+  triggerArp();
 };
 
 Tone.Transport.bpm.value = BPM;
