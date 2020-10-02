@@ -7,9 +7,11 @@ import { loopNoise } from './instruments/noise';
 import { startVox } from './instruments/vox';
 import { seqPadSampler } from './instruments/padSampler';
 import { loopKick } from './instruments/kick';
+import * as visuals from './vfx';
 
 const initInst = () => {
   Tone.Transport.start();
+  visuals.start();
   loopNoise();
   startVox();
   seqPadSampler();
