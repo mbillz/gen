@@ -11,8 +11,8 @@ const auroraGradientA = [
 ]
 
 const auroraGradientB = [
+  '#04206A',
   '#143601',
-  '#aad576',
 ]
 
 const rainPalletteA = [
@@ -32,22 +32,31 @@ const rainPalletteB = [
 ]
 
 var starOriginPoint;
-const starRotationAngle = .01;
 const maxStarAlpha = 255;
 const minStarAlpha = 50;
 
-/* these ones are critical to the overall performance */
-const numStars = 500;
-const numRainStreaks = 500;
-const numRainGhostLines = 1;
-const numAuroraLayers = 100;
+/* @Matt check out all of these constants to twiddle with things in the scene */
 
+/* Stars */
+const numStars = 500; // Performance-critical
 const starsMinWidth = 1;
 const starsMaxWidth = 3;
 
+/* Rain */
+const numRainStreaks = 500; // Performance-critical
+const numRainGhostLines = 1; // Performance-critical
 const maxRainThickness = 5;
+const maxRainLength = 0.1; // as a portion of screen height
+const minRainVelocity = 0.05;
+const maxRainVelocity = 0.15;
+const minRainProbability = 0.05;
 
-var xoff = 0.0;
+/* Aurora */
+const numAuroraLayers = 100; // Performance-critical
+const auroraHeight = 400;
+const auroraSwellSinusoidPeriodX = 3500;
+const auroraSwellSinusoidPeriodY = 5000;
+
 var stars;
 var aurora;
 var startTime;
@@ -55,150 +64,152 @@ var timeElapsed;
 var rainStreaks;
 
 function getVibeInterpolation() {
+  /* @Matt, this is the "vibe interpolation" between the modes. It's all gradual interpolation.
+     This value is from (0 -> 1) and changes these things in the scene:
+        - The amount of rain
+        - The speed of the rain
+        - The color pallete
+
+     So to make this respond to the music, we can just use a timing function to make this swell up then down?
+     Feel free to modify this however you choose.
+  */
   return mouseY / displayHeight;
 }
 
 class AuroraLine { 
-    constructor(points) {
-      this.points = points;
-      const totalHeight = 400;
-      this.movementWeight = numAuroraLayers * (totalHeight / numAuroraLayers);
+  constructor(points) {
+    this.points = points;
+    this.movementWeight = numAuroraLayers * (auroraHeight / numAuroraLayers);
 
-      this.colorsA = _.map(auroraGradientA, (c) => { return color(c) });
-      this.colorsB = _.map(auroraGradientB, (c) => { return color(c) });
+    this.colorsA = _.map(auroraGradientA, (c) => { return color(c) });
+    this.colorsB = _.map(auroraGradientB, (c) => { return color(c) });
+
+    this.alphaNoiseXOffset = 0;
+  }
+
+  drawEnd() {
+    this.alphaNoiseXOffset += 0.01;
+    let alphaNoise = 255 * noise(this.alphaNoiseXOffset);
+
+    const startColor = lerpColor(this.colorsA[0], this.colorsB[0], getVibeInterpolation());
+    const endColor = lerpColor(this.colorsA[1], this.colorsB[1], getVibeInterpolation());
+    for (var i=0; i<numAuroraLayers; i++) {
+      let ratio = i / numAuroraLayers
+      let ratio_minus = 1 - ratio
+      let interpColor = lerpColor(startColor, endColor, ratio_minus);
+      const alpha = alphaNoise * (1 - Math.abs(-2 * ratio + 1));
+      interpColor.setAlpha(alpha)
+      stroke(interpColor);
+      strokeWeight(20)
+      let fillColor = color(0)
+      fillColor.setAlpha(0)
+      fill(fillColor);
+      
+      const offsetPoints = _.map(this.points, (point, index) => {
+        return this.getPointOffset(point, index);
+      });
+
+      bezier(
+        offsetPoints[0].x,
+        offsetPoints[0].y, 
+        offsetPoints[1].x,
+        offsetPoints[1].y + (-this.movementWeight * ratio),
+        offsetPoints[2].x,
+        offsetPoints[2].y + (-this.movementWeight * ratio),
+        offsetPoints[3].x,
+        offsetPoints[3].y,
+      );
+    }
+  }
+
+  getPointOffset(originalPoint, pointIndex) {
+    // don't have motion on the fixed points, only the control points
+    if (pointIndex === 0 || pointIndex === 3) {
+      return originalPoint;
     }
 
-    drawEnd() {
-        xoff = xoff + 0.01;
-        let alphaNoise = 255 * noise(xoff);
+    const range = 0.1;
+    const sinX = Math.sin(timeElapsed / auroraSwellSinusoidPeriodX * Math.PI * 2)
+    const sinY = Math.sin(timeElapsed / auroraSwellSinusoidPeriodY * Math.PI * 2)
 
-        const startColor = lerpColor(this.colorsA[0], this.colorsB[0], getVibeInterpolation());
-        const endColor = lerpColor(this.colorsA[1], this.colorsB[1], getVibeInterpolation());
-        for (var i=0; i<numAuroraLayers; i++) {
-            let ratio = i / numAuroraLayers
-            let ratio_minus = 1 - ratio
-            let interpColor = lerpColor(startColor, endColor, ratio_minus);
-            const alpha = alphaNoise * (1 - Math.abs(-2 * ratio + 1));
-            interpColor.setAlpha(alpha)
-            stroke(interpColor);
-            strokeWeight(20)
-            let fillColor = color(0)
-            fillColor.setAlpha(0)
-            fill(fillColor);
-            
-            const offsetPoints = _.map(this.points, (point, index) => {
-              return this.getPointOffset(point, index);
-            });
+    // const speed = 0.0005;
+    // let noiseOffset = 1000 * pointIndex;
+    // not using these right now, looked jittery
+    // const noiseX = noise(noiseOffset + timeElapsed * speed) - 0.5;
+    // const noiseY = noise(noiseOffset + timeElapsed * speed) - 0.5;
+    const nX = range * sinX;
+    const nY = range * sinY;
 
-            bezier(
-              offsetPoints[0].x,
-              offsetPoints[0].y, 
-              offsetPoints[1].x,
-              offsetPoints[1].y + (-this.movementWeight * ratio),
-              offsetPoints[2].x,
-              offsetPoints[2].y + (-this.movementWeight * ratio),
-              offsetPoints[3].x,
-              offsetPoints[3].y,
-            );
-        }
-    }
-
-    getPointOffset(originalPoint, pointIndex) {
-      // don't have motion on the fixed points, only the control points
-      if (pointIndex === 0 || pointIndex === 3) {
-        return originalPoint;
-      }
-      const range = 0.1;
-      const sinX = Math.sin(timeElapsed / 3500 * Math.PI * 2)
-      const sinY = Math.sin(timeElapsed / 5000 * Math.PI * 2)
-
-      // const speed = 0.0005;
-      // let noiseOffset = 1000 * pointIndex;
-      // not using these right now, looked jittery
-      // const noiseX = noise(noiseOffset + timeElapsed * speed) - 0.5;
-      // const noiseY = noise(noiseOffset + timeElapsed * speed) - 0.5;
-      const nX = range * sinX;
-      const nY = range * sinY;
-
-      return {x: originalPoint.x + width * nX, y: originalPoint.y + height * nY};
-    }
+    return {x: originalPoint.x + width * nX, y: originalPoint.y + height * nY};
+  }
 };
 
-function gaussian(x, standardDeviation) {
-  const factor = 1 / (standardDeviation * Math.sqrt(2 * Math.PI));
-  return factor * Math.exp(-0.5 * (x * x) / (standardDeviation * standardDeviation));
-}
-
 class Stars { 
-    constructor(nStars, minSize, maxSize) {
-      this.nStars = nStars;
-      this.minSize = minSize;
-      this.maxSize = maxSize;
-      this.starPoints = this.createStars();
+  constructor(nStars, minSize, maxSize) {
+    this.nStars = nStars;
+    this.minSize = minSize;
+    this.maxSize = maxSize;
+    this.starPoints = this.createStars();
 
-      this.twinkleSpeed = 0.001 * Math.random() + 0.0005;
+    this.twinkleSpeed = 0.001 * Math.random() + 0.0005;
+  }
+
+  createStars() {
+    let curStarPoints = []
+    for (var i=0; i < this.nStars; i++) {
+      curStarPoints.push(this.generateNewStarPoint());
     }
+    return curStarPoints;
+  }
 
-    randomMinusOneToOne() {
-      return 2 * (Math.random() - 0.5);
+  generateNewStarPoint() {
+    // multiply by 1.5 so that our star grid is larger than the bounding box
+    // this avoids any "holes" as the scene rotates about the origin
+    let x = width * Math.random(); // TODO: If we bring back rotation, make this larger
+    let y = height * Math.random(); // TODO: If we bring back rotation, make this larger
+    let r = this.minSize + (this.maxSize - this.minSize) * Math.random();
+    return {x: x, y: y, r: r};
+  }
+
+  drawStars() {
+    for (var i=0; i < this.nStars; i++) {
+      let curPoints = this.starPoints[i];
+      let c = color(255, 255, 255);
+
+      let noiseOffset = 1000 * i;
+      let noiseFactor = noiseOffset + timeElapsed * this.twinkleSpeed;
+      let a = minStarAlpha + (maxStarAlpha - minStarAlpha) * noise(noiseFactor);
+
+      c.setAlpha(a);
+      fill(c);
+      noStroke();
+      circle(curPoints.x, curPoints.y, curPoints.r);
     }
+  }
 
-    createStars() {
-      let curStarPoints = []
-      for (var i=0; i < this.nStars; i++) {
-        curStarPoints.push(this.generateNewStarPoint());
-      }
-      return curStarPoints;
+  rotatePoint(point, angle, origin) {
+    let s = Math.sin(angle);
+    let c = Math.cos(angle);
+
+    // translate point back to origin:
+    point.x -= origin.x;
+    point.y -= origin.y;
+
+    // rotate point
+    let xnew = point.x * c - point.y * s;
+    let ynew = point.x * s + point.y * c;
+
+    // translate point back:
+    point.x = xnew + origin.x;
+    point.y = ynew + origin.y;
+  }
+
+  // rotate stars around origin
+  updateStars() {
+    for (var i=0; i < this.nStars; i++) {
+      this.rotatePoint(this.starPoints[i], starRotationAngle, starOriginPoint)
     }
-
-    generateNewStarPoint() {
-      // multiply by 1.5 so that our star grid is larger than the bounding box
-      // this avoids any "holes" as the scene rotates about the origin
-      let x = width * Math.random(); // TODO: If we bring back rotation, make this larger
-      let y = height * Math.random(); // TODO: If we bring back rotation, make this larger
-      let r = this.minSize + (this.maxSize - this.minSize) * Math.random();
-      return {x: x, y: y, r: r};
-    }
-
-    drawStars() {
-      for (var i=0; i < this.nStars; i++) {
-        let curPoints = this.starPoints[i];
-        let c = color(255, 255, 255);
-
-        let noiseOffset = 1000 * i;
-        let noiseFactor = noiseOffset + timeElapsed * this.twinkleSpeed;
-        let a = minStarAlpha + (maxStarAlpha - minStarAlpha) * noise(noiseFactor);
-
-        c.setAlpha(a);
-        fill(c);
-        noStroke();
-        circle(curPoints.x, curPoints.y, curPoints.r);
-      }
-    }
-
-    rotatePoint(point, angle, origin) {
-      let s = Math.sin(angle);
-      let c = Math.cos(angle);
-
-      // translate point back to origin:
-      point.x -= origin.x;
-      point.y -= origin.y;
-
-      // rotate point
-      let xnew = point.x * c - point.y * s;
-      let ynew = point.x * s + point.y * c;
-
-      // translate point back:
-      point.x = xnew + origin.x;
-      point.y = ynew + origin.y;
-    }
-
-    // rotate stars around origin
-    updateStars() {
-      for (var i=0; i < this.nStars; i++) {
-        this.rotatePoint(this.starPoints[i], starRotationAngle, starOriginPoint)
-      }
-    }
+  }
 };
 
 class RainStreak {
@@ -226,8 +237,7 @@ class RainStreak {
   }
 
   get averageRainVelocity() {
-    const pulse = sin(timeElapsed / 1000 * 2 * Math.PI);
-    return 0.05 + 0.1 * getVibeInterpolation();
+    return minRainVelocity + (maxRainVelocity - minRainVelocity) * getVibeInterpolation();
   }
 
   get velocity() {
@@ -235,7 +245,7 @@ class RainStreak {
   }
 
   rainProbablity() {
-    return 0.95 * getVibeInterpolation() + 0.05;
+    return (1 - minRainProbability) * getVibeInterpolation() + minRainProbability;
   }
 
   reset() {
@@ -243,7 +253,7 @@ class RainStreak {
 
     this.top = Math.random();
     this.velocityNormalized = (0.75 * Math.random() + 0.25)
-    this.length = 0.1 * this.velocityNormalized;
+    this.length = maxRainLength * this.velocityNormalized;
     this.centerX = Math.random();
     this.palletteIndex = Math.floor(_.size(this.palletteA) * Math.random());
     this.angle = Math.PI * 0.1 * ((mouseX / displayWidth) - 0.5);
@@ -288,27 +298,27 @@ class RainStreak {
 }
 
 window.setup = () => {
-    frameRate(10);
-    createCanvas(displayWidth, displayHeight);
-    smooth();
-    noFill();
+  startTime = Date.now();
+  timeElapsed = Date.now() - startTime;
 
-    let p1 = { x: -0.3 * width, y: 0.3 * height };
-    let p2 = { x: 0.7 * width, y: 0.1 * height };
-    let p3 = { x: 0.35 * width, y: 0.55 * height };
-    let p4 = { x: 1.3 * width, y: 0.4 * height };
-    aurora = new AuroraLine([p1, p2, p3, p4]);
+  frameRate(10); // TODO: See if this is the max? If we're rastering to video, we can set to 60
+  createCanvas(displayWidth, displayHeight);
+  smooth();
+  noFill();
 
-    stars = new Stars(numStars, starsMinWidth, starsMaxWidth);
-    starOriginPoint = {x: 0.75 * width, y: 0.5 * height};
-    console.log(stars.starPoints.slice(0, 50));
+  let p1 = { x: -0.3 * width, y: 0.3 * height };
+  let p2 = { x: 0.7 * width, y: 0.1 * height };
+  let p3 = { x: 0.35 * width, y: 0.55 * height };
+  let p4 = { x: 1.3 * width, y: 0.4 * height };
+  aurora = new AuroraLine([p1, p2, p3, p4]);
 
-    startTime = Date.now();
-    timeElapsed = Date.now() - startTime;
-      
-    rainStreaks = _.map(_.range(numRainStreaks), () => {
-      return new RainStreak();
-    });
+  stars = new Stars(numStars, starsMinWidth, starsMaxWidth);
+  starOriginPoint = {x: 0.75 * width, y: 0.5 * height};
+  console.log(stars.starPoints.slice(0, 50));
+    
+  rainStreaks = _.map(_.range(numRainStreaks), () => {
+    return new RainStreak();
+  });
 };
 
 function drawBackgroundGradient(color1, color2) {
@@ -323,22 +333,22 @@ function drawBackgroundGradient(color1, color2) {
 }
 
 window.draw = () => {
-    timeElapsed = Date.now() - startTime;
+  timeElapsed = Date.now() - startTime;
 
-    drawBackgroundGradient(color(backgroundGradient[0]), color(backgroundGradient[1]));
+  drawBackgroundGradient(color(backgroundGradient[0]), color(backgroundGradient[1]));
 
-    // stars
-    // stars.updateStars(); // we removed this, because we don't need to rotate the stars, just twinkle
-    stars.drawStars();
+  // stars
+  // stars.updateStars(); // we removed this, because we don't need to rotate the stars, just twinkle
+  stars.drawStars();
 
-    // // aurora
-    aurora.drawEnd(true);
+  // // aurora
+  aurora.drawEnd(true);
 
-    // // rain
-    _.forEach(rainStreaks, (rainStreak) => {
-      rainStreak.update(timeElapsed);
-      rainStreak.draw(displayWidth, displayHeight);
-    }); 
+  // // rain
+  _.forEach(rainStreaks, (rainStreak) => {
+    rainStreak.update(timeElapsed);
+    rainStreak.draw(displayWidth, displayHeight);
+  });
 }
 
 export function start() {
