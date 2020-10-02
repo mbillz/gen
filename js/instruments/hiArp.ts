@@ -12,8 +12,7 @@ const arpPlayer = new Player({
 
 export const triggerArp = () => {
   new Loop((time) => {
-    console.log('yo');
-    if (Math.random() >= 0.3) {
+    if (Math.random() >= 0.7) {
       arpPlayer.start();
     }
   }, getSecondsFromBPM(32)).start();

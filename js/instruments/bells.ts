@@ -27,7 +27,7 @@ function bellsPlayer(bellsUrl) {
   const bellsPlayer = new Player({
     url: bellsUrl,
     loop: false,
-    volume: -18,
+    volume: -20,
   }).connect(panner);
   return bellsPlayer;
 }
