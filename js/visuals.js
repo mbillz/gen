@@ -68,8 +68,8 @@ const auroraSwellSinusoidPeriodY = 5000;
 /* Mountains */
 const nMountains = 4;
 const nPoints = 200;
-const mountainStart = 0.55;  // fraction of height
-const mountainEnd = 0.4; // fraction of height
+const mountainStart = 0.45;  // fraction of height
+const mountainEnd = 0.3; // fraction of height
 const amplitudeStart = 0.2;
 const amplitudeEnd = 0.5;
 const stepStart = 0.05;
