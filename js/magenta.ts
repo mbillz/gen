@@ -24,6 +24,10 @@ import {performance} from './magenta_compat/global'
 
 import {CHECKPOINTS_DIR, TRIO_EXAMPLE, writeMemory} from './magenta_compat/common';
 import {DRUM_SEQS, MEL_A_QUARTERS, MEL_TEAPOT, MEL_TWINKLE} from './magenta_compat/common';
+import * as cmin2 from '../static/cmin/ns/cmin2.json';
+import * as cmin3 from '../static/cmin/ns/cmin3.json';
+import * as cmin4 from '../static/cmin/ns/cmin4.json';
+import * as cmin5 from '../static/cmin/ns/cmin5.json';
 import {writeNoteSeqs, writeTimer} from './magenta_compat/common';
 
 const sequences = mm.sequences;
@@ -37,6 +41,28 @@ const MEL_CHORDS_CKPT = `${CHECKPOINTS_DIR}/music_vae/mel_chords`;
 const MEL_16_CKPT = `${CHECKPOINTS_DIR}/music_vae/mel_16bar_small_q2`;
 const TRIO_2_CKPT = `${CHECKPOINTS_DIR}/music_vae/trio_2bar`;
 const TRIO_CKPT = `${CHECKPOINTS_DIR}/music_vae/trio_4bar`;
+const TRIO_16_CKPT = `${CHECKPOINTS_DIR}/music_vae/trio_16bar`;
+
+const BPM = 70;
+const SPQ = 4;
+const INSTRUMENT = 88;
+const VAE_TEMP = 1.0;
+
+//const SYNTH1: mm.INoteSequence = synth1;
+function alterSequence(
+  seq: mm.INoteSequence,
+  stepsPerQuarter: number,
+  bpm: number,
+  instrument: number): mm.INoteSequence {
+    const merged = mm.sequences.mergeConsecutiveNotes(seq);
+    var ux = mm.sequences.unquantizeSequence(merged, bpm);
+    const newNotes = ux.notes.map(n => {
+      n.program = instrument;
+      return n;
+    })
+    ux.notes = newNotes;
+    return mm.sequences.quantizeNoteSequence(ux, stepsPerQuarter);
+}
 
 async function runDrums() {
   writeNoteSeqs('drums-inputs', DRUM_SEQS);
@@ -77,19 +103,26 @@ async function runDrumsNade() {
 }
 
 async function runMel() {
-  const inputs = [MEL_TEAPOT, MEL_TWINKLE];
-  writeNoteSeqs('mel-inputs', inputs);
+  const inputs = [cmin2, cmin3, cmin4, cmin5];
+  // const inputs = [MEL_TEAPOT, MEL_TWINKLE];
+  const ainputs = inputs.map(x => 
+    alterSequence(x, SPQ, BPM, INSTRUMENT)
+  );
+  writeNoteSeqs('mel-inputs', ainputs, true);
 
   const mvae = new mm.MusicVAE(MEL_CKPT);
   await mvae.initialize();
 
   let start = performance.now();
-  const interp = await mvae.interpolate(inputs, 5);
+  const interp = await mvae.interpolate(ainputs, 5, VAE_TEMP);
+  const interp60 = interp.map(x =>
+    alterSequence(x, SPQ, BPM, INSTRUMENT)
+  );
   writeTimer('mel-interp-time', start);
-  writeNoteSeqs('mel-interp', interp);
+  writeNoteSeqs('mel-interp', interp60, true);
 
   start = performance.now();
-  const sample = await mvae.sample(4);
+  const sample = await mvae.sample(10);
   writeTimer('mel-sample-time', start);
   writeNoteSeqs('mel-samples', sample);
 
@@ -97,56 +130,61 @@ async function runMel() {
 }
 
 async function runMelChords() {
-  const inputs = [MEL_A_QUARTERS, MEL_TEAPOT];
-  writeNoteSeqs('mel-chords-inputs', inputs);
+  const inputs = [cmin2, cmin3, cmin4, cmin5];
+  const ainputs = inputs.map(x => 
+    alterSequence(x, SPQ, BPM, INSTRUMENT)
+  );
+  writeNoteSeqs('mel-chords-inputs', ainputs, true);
 
   const mvae = new mm.MusicVAE(MEL_CHORDS_CKPT);
   await mvae.initialize();
 
   let start = performance.now();
   const interp = await mvae.interpolate(
-      inputs, 5, null, {chordProgression: ['A', 'A', 'D', 'A']});
+      ainputs, 5, VAE_TEMP, {chordProgression: ['Em']});
+  const ainterp = interp.map(x => 
+    alterSequence(x, SPQ, BPM, INSTRUMENT)
+  );
   writeTimer('mel-chords-interp-time', start);
-  writeNoteSeqs('mel-chords-interp', interp);
+  writeNoteSeqs('mel-chords-interp', ainterp, true);
 
   start = performance.now();
-  const sample = await mvae.sample(4, null, {chordProgression: ['C']});
+  const sample = await mvae.sample(4, null, {chordProgression: ['Em']});
+  const asample = sample.map(x => 
+    alterSequence(x, SPQ, BPM, INSTRUMENT)
+  );
   writeTimer('mel-chords-sample-time', start);
-  writeNoteSeqs('mel-chords-samples', sample);
+  writeNoteSeqs('mel-chords-samples', asample, true);
 
   mvae.dispose();
 }
 
 async function runMel16() {
-  const inputs: mm.INoteSequence[] = [
-    mm.sequences.concatenate(
-        [
-          MEL_TEAPOT, MEL_TWINKLE, MEL_TEAPOT, MEL_TWINKLE, MEL_TEAPOT,
-          MEL_TWINKLE, MEL_TEAPOT, MEL_TWINKLE
-        ],
-        [32, 32]),
-    mm.sequences.concatenate(
-        [
-          MEL_TWINKLE, MEL_TEAPOT, MEL_TWINKLE, MEL_TEAPOT, MEL_TWINKLE,
-          MEL_TEAPOT, MEL_TWINKLE, MEL_TEAPOT
-        ],
-        [32, 32])
-  ];
-
-  writeNoteSeqs('mel16-inputs', inputs);
+  const inputs = [cmin2, cmin3, cmin4, cmin5];
+  // const inputs = [MEL_TEAPOT, MEL_TWINKLE];
+  const ainputs = inputs.map(x => 
+    alterSequence(x, SPQ, BPM, INSTRUMENT)
+  );
+  writeNoteSeqs('mel16-inputs', ainputs, true);
 
   const mvae = new mm.MusicVAE(MEL_16_CKPT);
   await mvae.initialize();
 
   let start = performance.now();
-  const interp = await mvae.interpolate(inputs, 5);
+  const interp = await mvae.interpolate(ainputs, 5, VAE_TEMP);
+  const ainterp = interp.map(x => 
+    alterSequence(x, SPQ, BPM, INSTRUMENT)
+  );
   writeTimer('mel16-interp-time', start);
-  writeNoteSeqs('mel16-interp', interp);
+  writeNoteSeqs('mel16-interp', ainterp, true);
 
   start = performance.now();
   const sample = await mvae.sample(4);
+  const asample = sample.map(x => 
+    alterSequence(x, SPQ, BPM, INSTRUMENT)
+  );
   writeTimer('mel16-sample-time', start);
-  writeNoteSeqs('mel16-samples', sample);
+  writeNoteSeqs('mel16-samples', asample, true);
 
   mvae.dispose();
 }
@@ -190,7 +228,7 @@ async function runTrio() {
   writeNoteSeqs('trio-recon', recon);
 
   start = performance.now();
-  const sample = await mvae.sample(4);
+  const sample = await mvae.sample(8);
   writeTimer('trio-sample-time', start);
   writeNoteSeqs('trio-samples', sample);
 

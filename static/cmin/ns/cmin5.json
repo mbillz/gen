@@ -1,0 +1,379 @@
+{
+	"ticksPerQuarter": 96,
+	"timeSignatures": [
+		{
+			"time": 0,
+			"numerator": 4,
+			"denominator": 4
+		}
+	],
+	"tempos": [
+		{
+			"time": 0,
+			"qpm": 120
+		}
+	],
+	"notes": [
+		{
+			"pitch": 60,
+			"velocity": 100,
+			"startTime": 0,
+			"endTime": 0.125,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "0",
+			"quantizedEndStep": "1"
+		},
+		{
+			"pitch": 67,
+			"velocity": 100,
+			"startTime": 0.125,
+			"endTime": 0.25,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "1",
+			"quantizedEndStep": "2"
+		},
+		{
+			"pitch": 72,
+			"velocity": 100,
+			"startTime": 0.25,
+			"endTime": 0.375,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "2",
+			"quantizedEndStep": "3"
+		},
+		{
+			"pitch": 67,
+			"velocity": 100,
+			"startTime": 0.375,
+			"endTime": 0.5,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "3",
+			"quantizedEndStep": "4"
+		},
+		{
+			"pitch": 79,
+			"velocity": 100,
+			"startTime": 0.5,
+			"endTime": 0.625,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "4",
+			"quantizedEndStep": "5"
+		},
+		{
+			"pitch": 81,
+			"velocity": 100,
+			"startTime": 0.625,
+			"endTime": 0.75,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "5",
+			"quantizedEndStep": "6"
+		},
+		{
+			"pitch": 84,
+			"velocity": 100,
+			"startTime": 0.75,
+			"endTime": 0.875,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "6",
+			"quantizedEndStep": "7"
+		},
+		{
+			"pitch": 75,
+			"velocity": 100,
+			"startTime": 0.875,
+			"endTime": 1,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "7",
+			"quantizedEndStep": "8"
+		},
+		{
+			"pitch": 60,
+			"velocity": 100,
+			"startTime": 1,
+			"endTime": 1.125,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "8",
+			"quantizedEndStep": "9"
+		},
+		{
+			"pitch": 67,
+			"velocity": 100,
+			"startTime": 1.125,
+			"endTime": 1.25,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "9",
+			"quantizedEndStep": "10"
+		},
+		{
+			"pitch": 72,
+			"velocity": 100,
+			"startTime": 1.25,
+			"endTime": 1.375,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "10",
+			"quantizedEndStep": "11"
+		},
+		{
+			"pitch": 67,
+			"velocity": 100,
+			"startTime": 1.375,
+			"endTime": 1.5,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "11",
+			"quantizedEndStep": "12"
+		},
+		{
+			"pitch": 79,
+			"velocity": 100,
+			"startTime": 1.5,
+			"endTime": 1.625,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "12",
+			"quantizedEndStep": "13"
+		},
+		{
+			"pitch": 81,
+			"velocity": 100,
+			"startTime": 1.625,
+			"endTime": 1.75,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "13",
+			"quantizedEndStep": "14"
+		},
+		{
+			"pitch": 84,
+			"velocity": 100,
+			"startTime": 1.75,
+			"endTime": 1.875,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "14",
+			"quantizedEndStep": "15"
+		},
+		{
+			"pitch": 75,
+			"velocity": 100,
+			"startTime": 1.875,
+			"endTime": 2,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "15",
+			"quantizedEndStep": "16"
+		},
+		{
+			"pitch": 60,
+			"velocity": 100,
+			"startTime": 2,
+			"endTime": 2.125,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "16",
+			"quantizedEndStep": "17"
+		},
+		{
+			"pitch": 67,
+			"velocity": 100,
+			"startTime": 2.125,
+			"endTime": 2.25,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "17",
+			"quantizedEndStep": "18"
+		},
+		{
+			"pitch": 72,
+			"velocity": 100,
+			"startTime": 2.25,
+			"endTime": 2.375,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "18",
+			"quantizedEndStep": "19"
+		},
+		{
+			"pitch": 67,
+			"velocity": 100,
+			"startTime": 2.375,
+			"endTime": 2.5,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "19",
+			"quantizedEndStep": "20"
+		},
+		{
+			"pitch": 79,
+			"velocity": 100,
+			"startTime": 2.5,
+			"endTime": 2.625,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "20",
+			"quantizedEndStep": "21"
+		},
+		{
+			"pitch": 81,
+			"velocity": 100,
+			"startTime": 2.625,
+			"endTime": 2.75,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "21",
+			"quantizedEndStep": "22"
+		},
+		{
+			"pitch": 84,
+			"velocity": 100,
+			"startTime": 2.75,
+			"endTime": 2.875,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "22",
+			"quantizedEndStep": "23"
+		},
+		{
+			"pitch": 75,
+			"velocity": 100,
+			"startTime": 2.875,
+			"endTime": 3,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "23",
+			"quantizedEndStep": "24"
+		},
+		{
+			"pitch": 60,
+			"velocity": 100,
+			"startTime": 3,
+			"endTime": 3.125,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "24",
+			"quantizedEndStep": "25"
+		},
+		{
+			"pitch": 67,
+			"velocity": 100,
+			"startTime": 3.125,
+			"endTime": 3.25,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "25",
+			"quantizedEndStep": "26"
+		},
+		{
+			"pitch": 72,
+			"velocity": 100,
+			"startTime": 3.25,
+			"endTime": 3.375,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "26",
+			"quantizedEndStep": "27"
+		},
+		{
+			"pitch": 67,
+			"velocity": 100,
+			"startTime": 3.375,
+			"endTime": 3.5,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "27",
+			"quantizedEndStep": "28"
+		},
+		{
+			"pitch": 79,
+			"velocity": 100,
+			"startTime": 3.5,
+			"endTime": 3.625,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "28",
+			"quantizedEndStep": "29"
+		},
+		{
+			"pitch": 81,
+			"velocity": 100,
+			"startTime": 3.625,
+			"endTime": 3.75,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "29",
+			"quantizedEndStep": "30"
+		},
+		{
+			"pitch": 84,
+			"velocity": 100,
+			"startTime": 3.75,
+			"endTime": 3.875,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "30",
+			"quantizedEndStep": "31"
+		},
+		{
+			"pitch": 75,
+			"velocity": 100,
+			"startTime": 3.875,
+			"endTime": 4,
+			"instrument": 0,
+			"program": 0,
+			"isDrum": false,
+			"quantizedStartStep": "31",
+			"quantizedEndStep": "32"
+		}
+	],
+	"totalTime": 4,
+	"sourceInfo": {
+		"encodingType": "MIDI",
+		"parser": "TONEJS_MIDI_CONVERT"
+	},
+	"quantizationInfo": {
+		"stepsPerQuarter": 4
+	},
+	"totalQuantizedSteps": "32"
+}

@@ -30,6 +30,7 @@ export const CHECKPOINTS_DIR =
 // http://www.polyphone-soundfonts.com/en/files/27-instrument-sets/256-sgm-v2-01
 export const SOUNDFONT_URL =
     'https://storage.googleapis.com/magentadata/js/soundfonts/sgm_plus';
+    
 
 export const DRUM_SEQS: mm.INoteSequence[] = [
   {
@@ -538,6 +539,9 @@ function createPlayerButton(
 }
 
 function createDownloadButton(seq: mm.INoteSequence) {
+  for (let i = 0;i < seq.notes.length; ++i) {
+    seq.notes[i].velocity = 100;
+  }
   const button = document.createElement('button');
   button.textContent = 'Save MIDI';
   button.addEventListener('click', () => {
