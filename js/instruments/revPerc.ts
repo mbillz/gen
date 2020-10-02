@@ -13,5 +13,5 @@ export const triggerPerc = () => {
     if (Math.random() >= 0.5) {
       percPlayer.start();
     }
-  }, getSecondsFromBPM(64)).start();
+  }, getSecondsFromBPM(32)).start();
 };
