@@ -5,6 +5,16 @@ const backgroundGradient = [
   '#01030F',
 ]
 
+const mountainGradientA = [
+  '#3d0061',
+  '#264038',
+]
+
+const mountainGradientB = [
+  '#143601',
+  '#242424',
+]
+
 const auroraGradientA = [
   '#7400b8',
   '#80ffdb',
@@ -37,22 +47,34 @@ const maxStarAlpha = 255;
 const minStarAlpha = 50;
 
 /* these ones are critical to the overall performance */
-const numStars = 500;
+const numStars = 10000;
 const numRainStreaks = 500;
 const numRainGhostLines = 1;
 const numAuroraLayers = 100;
 
-const starsMinWidth = 1;
-const starsMaxWidth = 3;
+const starsMinWidth = .05;
+const starsMaxWidth = 2;
 
 const maxRainThickness = 5;
 
 var xoff = 0.0;
 var stars;
 var aurora;
+var mountains;
 var startTime;
 var timeElapsed;
 var rainStreaks;
+
+
+// mountain constants
+const nMountains = 4;
+const nPoints = 200;
+const mountainStart = 0.55;  // fraction of height
+const mountainEnd = 0.4; // fraction of height
+const amplitudeStart = 0.2;
+const amplitudeEnd = 0.5;
+const stepStart = 0.05;
+const stepEnd = 0.01;
 
 function getVibeInterpolation() {
   return mouseY / displayHeight;
@@ -287,6 +309,71 @@ class RainStreak {
   }
 }
 
+class Mountains { 
+  constructor() {
+    this.mountainPoints = [];
+    this.createAllMountainPoints();
+    this.colorsA = _.map(mountainGradientA, (c) => { return color(c) });
+    this.colorsB = _.map(mountainGradientB, (c) => { return color(c) });
+  }
+
+  createAllMountainPoints() {
+    for (var i=nMountains; i>=0; i--) {
+      var ratio = i/nMountains;
+      var pos = map(ratio, 1, 0, mountainStart, mountainEnd)
+      var amp = map(ratio, 1, 0, amplitudeStart, amplitudeEnd);
+      var step = map(ratio, 1, 0, stepStart, stepEnd);
+      noiseDetail(map(ratio, 1, 0, 70, 10), map(ratio,1,0,0.3,0.7));
+      this.mountainPoints[i] = this.createSingleMountain(pos, amp, step, i);
+    }
+  }
+
+  createSingleMountain(position, amplitude, step, z) {
+    var mountain = [];
+    var moyenne = 0;
+    for (var i=0; i<=nPoints; i++){
+        var v = height*amplitude*noise(i*step, 100*z);
+        moyenne += v;
+        mountain[i] =  v;
+    }
+    moyenne = moyenne/mountain.length
+    var delta = (mountainEnd - mountainStart)/nMountains;
+    for (var i=0; i<=nPoints; i++) {
+        mountain[i] = height*(1-position) + mountain[i]-moyenne + map(noise(z), 0, 1, -delta, delta);
+    }
+    return mountain;
+  }
+
+  drawAllMontains() {
+    const startColor = lerpColor(this.colorsA[0], this.colorsB[0], getVibeInterpolation());
+    const endColor = lerpColor(this.colorsA[1], this.colorsB[1], getVibeInterpolation());
+    var firstColor = lerpColor(startColor, endColor, 0.8);
+    for (var i=nMountains; i>=0; i--) {
+      var ratio = i/nMountains
+      fill(lerpColor(endColor, firstColor, ratio));
+      noStroke();
+      beginShape();
+      vertex(0, height);
+      for (var j=0; j<=nPoints; j++){
+          vertex(j/nPoints*width, this.mountainPoints[i][j]);
+      }
+      vertex(width, height);
+      endShape(CLOSE);
+    }
+  }
+  // will just take first point and make it last point for now.
+  // won't be using this, just going to make it static
+  updateMountainPoints() {
+    for (var i=nMountains; i>=0; i--) {
+      var curMountain = this.mountainPoints[i]
+      var updatedMountain = []
+      updatedMountain.push(curMountain[curMountain.length - 1]);
+      updatedMountain = updatedMountain.concat(curMountain.slice(0, curMountain.length - 1));
+      this.mountainPoints[i] = updatedMountain;
+    };
+  }
+}
+
 window.setup = () => {
     frameRate(10);
     createCanvas(displayWidth, displayHeight);
@@ -297,8 +384,9 @@ window.setup = () => {
     let p2 = { x: 0.7 * width, y: 0.1 * height };
     let p3 = { x: 0.35 * width, y: 0.55 * height };
     let p4 = { x: 1.3 * width, y: 0.4 * height };
-    aurora = new AuroraLine([p1, p2, p3, p4]);
 
+    mountains = new Mountains();
+    aurora = new AuroraLine([p1, p2, p3, p4]);
     stars = new Stars(numStars, starsMinWidth, starsMaxWidth);
     starOriginPoint = {x: 0.75 * width, y: 0.5 * height};
     console.log(stars.starPoints.slice(0, 50));
@@ -330,6 +418,9 @@ window.draw = () => {
     // stars
     // stars.updateStars(); // we removed this, because we don't need to rotate the stars, just twinkle
     stars.drawStars();
+    
+    // draw mountains
+    mountains.drawAllMontains();
 
     // // aurora
     aurora.drawEnd(true);
