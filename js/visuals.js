@@ -2,23 +2,6 @@ import _ from 'lodash';
 
 /* @Matt check out all of these constants to twiddle with things in the scene */
 
-import { Player, AutoPanner } from 'tone';
-
-import rain from '../static/samples/rain.mp3';
-
-// dropping visual dependant audio here
-const panner = new AutoPanner(0.01).toDestination().start();
-
-const rainPlayer = new Player({
-  url: rain,
-  loop: true,
-  volume: -24,
-}).connect(panner);
-
-export const loopRain = () => {
-  rainPlayer.start();
-};
-
 const backgroundGradientA = ['#03071e', '#01030F'];
 
 const mountainGradientA = ['#3d0061', '#264038'];
@@ -78,6 +61,8 @@ var rainStreaks;
 var starOriginPoint;
 var gradientBackground;
 var rainSwellFactor = 1.0;
+let shouldFlood = false;
+let floodVal = 1;
 
 function getVibeInterpolation() {
   /* @Matt, this is the "vibe interpolation" between the modes. It's all gradual interpolation.
@@ -517,12 +502,15 @@ export function start() {
 }
 
 export function swellRain() {
-  rainSwellFactor = 5.0;
+  rainSwellFactor = 15.0;
 }
 
-const bpm = 100;
-const numBeatsPerSwell = 4; // swell rain on every fourth beat
-const millisPerBeat = (60 * 1000) / bpm;
-setInterval(() => {
-  swellRain();
-}, numBeatsPerSwell * millisPerBeat);
+export function addRain() {
+  setTimeout(() => {
+    shouldFlood = true;
+  }, 10000);
+
+  setTimeout(() => {
+    shouldFlood = false;
+  }, 30000);
+}

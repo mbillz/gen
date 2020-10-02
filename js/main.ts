@@ -11,6 +11,7 @@ import { loopBells } from './instruments/bells';
 import * as visuals from './visuals';
 import { triggerArp } from './instruments/hiArp';
 import { triggerPerc } from './instruments/revPerc';
+import { loopRain } from './instruments/rain';
 
 const initInst = () => {
   Tone.Transport.start();
@@ -22,7 +23,7 @@ const initInst = () => {
   loopBells();
   triggerArp();
   triggerPerc();
-  visuals.loopRain();
+  loopRain();
 };
 
 Tone.Transport.bpm.value = BPM;
