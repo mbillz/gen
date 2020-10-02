@@ -6,13 +6,13 @@ const panner = new AutoPanner(getSecondsFromBPM(0.25)).toDestination().start();
 
 const arpPlayer = new Player({
   url: arp,
-  volume: -15,
+  volume: -12,
   loop: false,
 }).connect(panner);
 
 export const triggerArp = () => {
   new Loop((time) => {
-    if (Math.random() >= 0.7) {
+    if (Math.random() >= 0.5) {
       arpPlayer.start();
     }
   }, getSecondsFromBPM(32)).start();
