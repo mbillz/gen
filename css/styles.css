@@ -1,5 +1,13 @@
 body {
   background: #333;
+  display: flex;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
 }
 
 canvas {
@@ -8,4 +16,18 @@ canvas {
   left: 0;
   margin: 0;
   padding: 0;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
 }
