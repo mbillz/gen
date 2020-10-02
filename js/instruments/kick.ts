@@ -1,18 +1,17 @@
-import { MembraneSynth, Loop } from 'tone';
+import { Player, Loop } from 'tone';
 import { getSecondsFromBPM } from '../utils/time';
+import kick from '../../static/samples/kick.mp3';
 
-const kick = new MembraneSynth({
+const kickPlayer = new Player({
+  url: kick,
   volume: -10,
-  envelope: {
-    attack: 0.1,
-    decay: 0.4,
-  },
+  loop: false,
 }).toDestination();
 
 export const loopKick = () => {
   new Loop((time) => {
     if (Math.random() >= 0.1) {
-      kick.triggerAttackRelease('E1', time);
+      kickPlayer.start();
     }
   }, '2n').start(getSecondsFromBPM(16));
 };
