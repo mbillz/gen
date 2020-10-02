@@ -23,7 +23,7 @@ const pad = new Sampler({
     G4: padG4,
     'G#4': padAb4,
   },
-  volume: -16,
+  volume: -18,
 }).toDestination();
 
 let currentNote = 'C4';
