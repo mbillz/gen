@@ -22,6 +22,7 @@ const initInst = () => {
   loopBells();
   triggerArp();
   triggerPerc();
+  visuals.loopRain();
 };
 
 Tone.Transport.bpm.value = BPM;

@@ -4,7 +4,7 @@ import revPerc from '../../static/samples/rev_perc.mp3';
 
 const percPlayer = new Player({
   url: revPerc,
-  volume: -15,
+  volume: -20,
   loop: false,
 }).toDestination();
 
