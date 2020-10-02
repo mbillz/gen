@@ -502,7 +502,7 @@ export function start() {
 }
 
 export function swellRain() {
-  rainSwellFactor = 15.0;
+  rainSwellFactor = 10.0;
 }
 
 export function addRain() {
