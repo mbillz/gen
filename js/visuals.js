@@ -44,7 +44,7 @@ const rainPalletteB = [
 /* @Matt check out all of these constants to twiddle with things in the scene */
 
 /* Stars */
-const numStars = 500; // Performance-critical
+const numStars = 750; // Performance-critical
 const starsMinWidth = 1;
 const starsMaxWidth = 3;
 const maxStarAlpha = 255;
@@ -52,7 +52,7 @@ const minStarAlpha = 50;
 
 /* Rain */
 const numRainStreaks = 500; // Performance-critical
-const numRainGhostLines = 1; // Performance-critical
+const numRainGhostLines = 2; // Performance-critical
 const maxRainThickness = 5;
 const maxRainLength = 0.1; // as a portion of screen height
 const minRainVelocity = 0.05;
@@ -83,7 +83,6 @@ var startTime;
 var timeElapsed;
 var rainStreaks;
 var starOriginPoint;
-
 
 function getVibeInterpolation() {
   /* @Matt, this is the "vibe interpolation" between the modes. It's all gradual interpolation.
@@ -187,7 +186,7 @@ class Stars {
   generateNewStarPoint() {
     // multiply by 1.5 so that our star grid is larger than the bounding box
     // this avoids any "holes" as the scene rotates about the origin
-    let x = width * Math.random(); // TODO: If we bring back rotation, make this larger
+    let x = width * 2 * (Math.random() - 0.5); // TODO: If we bring back rotation, make this larger
     let y = height * Math.random(); // TODO: If we bring back rotation, make this larger
     let r = this.minSize + (this.maxSize - this.minSize) * Math.random();
     return {x: x, y: y, r: r};
@@ -228,6 +227,7 @@ class Stars {
 
   // rotate stars around origin
   updateStars() {
+    const starRotationAngle = 0.0000002 * timeElapsed;
     for (var i=0; i < this.nStars; i++) {
       this.rotatePoint(this.starPoints[i], starRotationAngle, starOriginPoint)
     }
@@ -290,7 +290,7 @@ class RainStreak {
     const displacementX = this.length * sin(this.angle);
     for (var i = 0; i < numRainGhostLines; i++) {
       const alpha = this.alpha * Math.pow(0.8, i);
-      const lineTopYChange = i * this.velocity;
+      const lineTopYChange = i * this.velocity * 0.25;
       const lineTopDisplacement = lineTopYChange * sin(this.angle);
       const lineTop = this.top;
       const color = this.palletteColor(alpha);
@@ -373,6 +373,7 @@ class Mountains {
       endShape(CLOSE);
     }
   }
+
   // will just take first point and make it last point for now.
   // won't be using this, just going to make it static
   updateMountainPoints() {
@@ -433,10 +434,10 @@ window.draw = () => {
   // draw mountains
   mountains.drawAllMontains();
 
-  // // aurora
+  // aurora
   aurora.drawEnd(true);
 
-  // // rain
+  // rain
   _.forEach(rainStreaks, (rainStreak) => {
     rainStreak.update(timeElapsed);
     rainStreak.draw(displayWidth, displayHeight);
