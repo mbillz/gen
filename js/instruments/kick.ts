@@ -5,7 +5,7 @@ import { swellRain } from '../visuals';
 
 const kickPlayer = new Player({
   url: kick,
-  volume: -15,
+  volume: -10,
   loop: false,
 }).toDestination();
 
