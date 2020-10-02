@@ -20,10 +20,15 @@ const initInst = () => {
 
 Tone.Transport.bpm.value = BPM;
 
+// maybe we can do this without keydown - sometimes browsers are cool with it and sometimes not
+const doIt = async () => {
+  Tone.start();
+  await Tone.loaded();
+  initInst();
+};
+
 document.addEventListener('keydown', async (e) => {
   if (e.which === 13) {
-    Tone.start();
-    await Tone.loaded();
-    initInst();
+    doIt();
   }
 });
