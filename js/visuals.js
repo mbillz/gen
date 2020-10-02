@@ -2,46 +2,19 @@ import _ from 'lodash';
 
 /* @Matt check out all of these constants to twiddle with things in the scene */
 
-const backgroundGradient = [
-  '#03071e',
-  '#01030F',
-]
+const backgroundGradient = ['#03071e', '#01030F'];
 
-const mountainGradientA = [
-  '#3d0061',
-  '#264038',
-]
+const mountainGradientA = ['#3d0061', '#264038'];
 
-const mountainGradientB = [
-  '#143601',
-  '#242424',
-]
+const mountainGradientB = ['#143601', '#242424'];
 
-const auroraGradientA = [
-  '#7400b8',
-  '#80ffdb',
-]
+const auroraGradientA = ['#7400b8', '#80ffdb'];
 
-const auroraGradientB = [
-  '#04206A',
-  '#143601',
-]
+const auroraGradientB = ['#04206A', '#143601'];
 
-const rainPalletteA = [
-  '#6930c3',
-  '#5390d9',
-  '#4ea8de',
-  '#56cfe1',
-  '#72efdd',
-]
+const rainPalletteA = ['#6930c3', '#5390d9', '#4ea8de', '#56cfe1', '#72efdd'];
 
-const rainPalletteB = [
-  '#143601',
-  '#1a4301',
-  '#245501',
-  '#538d22',
-  '#73a942',
-]
+const rainPalletteB = ['#143601', '#1a4301', '#245501', '#538d22', '#73a942'];
 
 /* Stars */
 const numStars = 1000; // Performance-critical
@@ -69,8 +42,8 @@ const auroraSwellSinusoidPeriodY = 5000;
 /* Mountains */
 const nMountains = 4;
 const nPoints = 300;
-const mountainStart = 0.6;  // fraction of height
-const mountainEnd = 0.4; // fraction of height
+const mountainStart = 0.5; // fraction of height
+const mountainEnd = 0.3; // fraction of height
 const amplitudeStart = 0.2;
 const amplitudeEnd = 0.5;
 const stepStart = 0.05;
@@ -98,13 +71,17 @@ function getVibeInterpolation() {
   return mouseY / displayHeight;
 }
 
-class AuroraLine { 
+class AuroraLine {
   constructor(points) {
     this.points = points;
     this.movementWeight = numAuroraLayers * (auroraHeight / numAuroraLayers);
 
-    this.colorsA = _.map(auroraGradientA, (c) => { return color(c) });
-    this.colorsB = _.map(auroraGradientB, (c) => { return color(c) });
+    this.colorsA = _.map(auroraGradientA, (c) => {
+      return color(c);
+    });
+    this.colorsB = _.map(auroraGradientB, (c) => {
+      return color(c);
+    });
 
     this.alphaNoiseXOffset = 0;
   }
@@ -113,33 +90,41 @@ class AuroraLine {
     this.alphaNoiseXOffset += 0.01;
     let alphaNoise = 255 * noise(this.alphaNoiseXOffset);
 
-    const startColor = lerpColor(this.colorsA[0], this.colorsB[0], getVibeInterpolation());
-    const endColor = lerpColor(this.colorsA[1], this.colorsB[1], getVibeInterpolation());
-    for (var i=0; i<numAuroraLayers; i++) {
-      let ratio = i / numAuroraLayers
-      let ratio_minus = 1 - ratio
+    const startColor = lerpColor(
+      this.colorsA[0],
+      this.colorsB[0],
+      getVibeInterpolation()
+    );
+    const endColor = lerpColor(
+      this.colorsA[1],
+      this.colorsB[1],
+      getVibeInterpolation()
+    );
+    for (var i = 0; i < numAuroraLayers; i++) {
+      let ratio = i / numAuroraLayers;
+      let ratio_minus = 1 - ratio;
       let interpColor = lerpColor(startColor, endColor, ratio_minus);
       const alpha = alphaNoise * (1 - Math.abs(-2 * ratio + 1));
-      interpColor.setAlpha(alpha)
+      interpColor.setAlpha(alpha);
       stroke(interpColor);
-      strokeWeight(20)
-      let fillColor = color(0)
-      fillColor.setAlpha(0)
+      strokeWeight(20);
+      let fillColor = color(0);
+      fillColor.setAlpha(0);
       fill(fillColor);
-      
+
       const offsetPoints = _.map(this.points, (point, index) => {
         return this.getPointOffset(point, index);
       });
 
       bezier(
         offsetPoints[0].x,
-        offsetPoints[0].y, 
+        offsetPoints[0].y,
         offsetPoints[1].x,
-        offsetPoints[1].y + (-this.movementWeight * ratio),
+        offsetPoints[1].y + -this.movementWeight * ratio,
         offsetPoints[2].x,
-        offsetPoints[2].y + (-this.movementWeight * ratio),
+        offsetPoints[2].y + -this.movementWeight * ratio,
         offsetPoints[3].x,
-        offsetPoints[3].y,
+        offsetPoints[3].y
       );
     }
   }
@@ -151,8 +136,12 @@ class AuroraLine {
     }
 
     const range = 0.1;
-    const sinX = Math.sin(timeElapsed / auroraSwellSinusoidPeriodX * Math.PI * 2)
-    const sinY = Math.sin(timeElapsed / auroraSwellSinusoidPeriodY * Math.PI * 2)
+    const sinX = Math.sin(
+      (timeElapsed / auroraSwellSinusoidPeriodX) * Math.PI * 2
+    );
+    const sinY = Math.sin(
+      (timeElapsed / auroraSwellSinusoidPeriodY) * Math.PI * 2
+    );
 
     // const speed = 0.0005;
     // let noiseOffset = 1000 * pointIndex;
@@ -162,19 +151,22 @@ class AuroraLine {
     const nX = range * sinX;
     const nY = range * sinY;
 
-    return {x: originalPoint.x + width * nX, y: originalPoint.y + height * nY};
+    return {
+      x: originalPoint.x + width * nX,
+      y: originalPoint.y + height * nY,
+    };
   }
-};
+}
 
-class Stars { 
+class Stars {
   constructor() {
     this.starPoints = this.createStars();
     this.twinkleSpeed = 0.001 * Math.random() + 0.0005;
   }
 
   createStars() {
-    let curStarPoints = []
-    for (var i=0; i < numStars; i++) {
+    let curStarPoints = [];
+    for (var i = 0; i < numStars; i++) {
       curStarPoints.push(this.generateNewStarPoint());
     }
     return curStarPoints;
@@ -186,11 +178,11 @@ class Stars {
     let x = width * 2 * (Math.random() - 0.5); // TODO: If we bring back rotation, make this larger
     let y = height * 2 * (Math.random() - 0.5); // TODO: If we bring back rotation, make this larger
     let r = starsMinWidth + (starsMaxWidth - starsMinWidth) * Math.random();
-    return {x: x, y: y, r: r};
+    return { x: x, y: y, r: r };
   }
 
   drawStars() {
-    for (var i=0; i < numStars; i++) {
+    for (var i = 0; i < numStars; i++) {
       let curPoints = this.starPoints[i];
       let c = color(255, 255, 255);
 
@@ -225,15 +217,19 @@ class Stars {
   // rotate stars around origin
   updateStars() {
     for (var i = 0; i < numStars; i++) {
-      this.rotatePoint(this.starPoints[i], starRotationSpeed, starOriginPoint)
+      this.rotatePoint(this.starPoints[i], starRotationSpeed, starOriginPoint);
     }
   }
-};
+}
 
 class RainStreak {
   constructor() {
-    this.palletteA = _.map(rainPalletteA, (c) => { return color(c) })
-    this.palletteB = _.map(rainPalletteB, (c) => { return color(c) })
+    this.palletteA = _.map(rainPalletteA, (c) => {
+      return color(c);
+    });
+    this.palletteB = _.map(rainPalletteB, (c) => {
+      return color(c);
+    });
 
     this.reset();
   }
@@ -255,7 +251,10 @@ class RainStreak {
   }
 
   get averageRainVelocity() {
-    return minRainVelocity + (maxRainVelocity - minRainVelocity) * getVibeInterpolation();
+    return (
+      minRainVelocity +
+      (maxRainVelocity - minRainVelocity) * getVibeInterpolation()
+    );
   }
 
   get velocity() {
@@ -263,18 +262,20 @@ class RainStreak {
   }
 
   rainProbablity() {
-    return (1 - minRainProbability) * getVibeInterpolation() + minRainProbability;
+    return (
+      (1 - minRainProbability) * getVibeInterpolation() + minRainProbability
+    );
   }
 
   reset() {
     this.isOn = Math.random() <= this.rainProbablity();
 
     this.top = Math.random();
-    this.velocityNormalized = (0.75 * Math.random() + 0.25)
+    this.velocityNormalized = 0.75 * Math.random() + 0.25;
     this.length = maxRainLength * this.velocityNormalized;
     this.centerX = Math.random();
     this.palletteIndex = Math.floor(_.size(this.palletteA) * Math.random());
-    this.angle = Math.PI * 0.1 * ((mouseX / displayWidth) - 0.5);
+    this.angle = Math.PI * 0.1 * (mouseX / displayWidth - 0.5);
   }
 
   draw(width, height) {
@@ -290,16 +291,17 @@ class RainStreak {
       const lineTopDisplacement = lineTopYChange * sin(this.angle);
       const lineTop = this.top;
       const color = this.palletteColor(alpha);
-  
+
       stroke(color);
       line(
         displayWidth * (this.centerX - lineTopDisplacement),
         displayHeight * (this.top - lineTopYChange),
         displayWidth * (this.centerX + displacementX - lineTopDisplacement),
-        displayHeight * (this.top - lineTopYChange + cos(this.angle) * this.length),
+        displayHeight *
+          (this.top - lineTopYChange + cos(this.angle) * this.length)
       );
     }
-   }
+  }
 
   update(timeElapsed) {
     const topBefore = this.top;
@@ -315,21 +317,25 @@ class RainStreak {
   }
 }
 
-class Mountains { 
+class Mountains {
   constructor() {
     this.mountainPoints = [];
     this.createAllMountainPoints();
-    this.colorsA = _.map(mountainGradientA, (c) => { return color(c) });
-    this.colorsB = _.map(mountainGradientB, (c) => { return color(c) });
+    this.colorsA = _.map(mountainGradientA, (c) => {
+      return color(c);
+    });
+    this.colorsB = _.map(mountainGradientB, (c) => {
+      return color(c);
+    });
   }
 
   createAllMountainPoints() {
-    for (var i=nMountains; i>=0; i--) {
-      var ratio = i/nMountains;
-      var pos = map(ratio, 1, 0, mountainStart, mountainEnd)
+    for (var i = nMountains; i >= 0; i--) {
+      var ratio = i / nMountains;
+      var pos = map(ratio, 1, 0, mountainStart, mountainEnd);
       var amp = map(ratio, 1, 0, amplitudeStart, amplitudeEnd);
       var step = map(ratio, 1, 0, stepStart, stepEnd);
-      noiseDetail(map(ratio, 1, 0, 70, 10), map(ratio,1,0,0.3,0.7));
+      noiseDetail(map(ratio, 1, 0, 70, 10), map(ratio, 1, 0, 0.3, 0.7));
       this.mountainPoints[i] = this.createSingleMountain(pos, amp, step, i);
     }
   }
@@ -337,33 +343,45 @@ class Mountains {
   createSingleMountain(position, amplitude, step, z) {
     var mountain = [];
     var moyenne = 0;
-    for (var i=0; i<=nPoints; i++){
-        var v = height*amplitude*noise(i*step, 100*z);
-        moyenne += v;
-        mountain[i] =  v;
+    for (var i = 0; i <= nPoints; i++) {
+      var v = height * amplitude * noise(i * step, 100 * z);
+      moyenne += v;
+      mountain[i] = v;
     }
-    moyenne = moyenne/mountain.length
-    var delta = (mountainEnd - mountainStart)/nMountains;
-    for (var i=0; i<=nPoints; i++) {
-        mountain[i] = height*(1-position) + mountain[i]-moyenne + map(noise(z), 0, 1, -delta, delta);
+    moyenne = moyenne / mountain.length;
+    var delta = (mountainEnd - mountainStart) / nMountains;
+    for (var i = 0; i <= nPoints; i++) {
+      mountain[i] =
+        height * (1 - position) +
+        mountain[i] -
+        moyenne +
+        map(noise(z), 0, 1, -delta, delta);
     }
     return mountain;
   }
 
   drawAllMontains() {
-    const startColor = lerpColor(this.colorsA[0], this.colorsB[0], getVibeInterpolation());
-    const endColor = lerpColor(this.colorsA[1], this.colorsB[1], getVibeInterpolation());
+    const startColor = lerpColor(
+      this.colorsA[0],
+      this.colorsB[0],
+      getVibeInterpolation()
+    );
+    const endColor = lerpColor(
+      this.colorsA[1],
+      this.colorsB[1],
+      getVibeInterpolation()
+    );
     var firstColor = lerpColor(startColor, endColor, 0.8);
-    for (var i=nMountains; i>=0; i--) {
-      var ratio = i/nMountains
-      let actualColor = lerpColor(endColor, firstColor, ratio)
+    for (var i = nMountains; i >= 0; i--) {
+      var ratio = i / nMountains;
+      let actualColor = lerpColor(endColor, firstColor, ratio);
       actualColor.setAlpha(mountainAlpha);
       fill(actualColor);
       noStroke();
       beginShape();
       vertex(0, height);
-      for (var j=0; j<=nPoints; j++){
-          vertex(j/nPoints*width, this.mountainPoints[i][j]);
+      for (var j = 0; j <= nPoints; j++) {
+        vertex((j / nPoints) * width, this.mountainPoints[i][j]);
       }
       vertex(width, height);
       endShape(CLOSE);
@@ -373,13 +391,15 @@ class Mountains {
   // will just take first point and make it last point for now.
   // won't be using this, just going to make it static
   updateMountainPoints() {
-    for (var i=nMountains; i>=0; i--) {
-      var curMountain = this.mountainPoints[i]
-      var updatedMountain = []
+    for (var i = nMountains; i >= 0; i--) {
+      var curMountain = this.mountainPoints[i];
+      var updatedMountain = [];
       updatedMountain.push(curMountain[curMountain.length - 1]);
-      updatedMountain = updatedMountain.concat(curMountain.slice(0, curMountain.length - 1));
+      updatedMountain = updatedMountain.concat(
+        curMountain.slice(0, curMountain.length - 1)
+      );
       this.mountainPoints[i] = updatedMountain;
-    };
+    }
   }
 }
 
@@ -398,8 +418,8 @@ window.setup = () => {
   aurora = new AuroraLine([p1, p2, p3, p4]);
   mountains = new Mountains();
   stars = new Stars();
-  starOriginPoint = {x: 0.5 * width, y: 0.5 * height};
-    
+  starOriginPoint = { x: 0.5 * width, y: 0.5 * height };
+
   rainStreaks = _.map(_.range(numRainStreaks), () => {
     return new RainStreak();
   });
@@ -419,12 +439,15 @@ function drawBackgroundGradient(color1, color2) {
 window.draw = () => {
   timeElapsed = Date.now() - startTime;
 
-  drawBackgroundGradient(color(backgroundGradient[0]), color(backgroundGradient[1]));
+  drawBackgroundGradient(
+    color(backgroundGradient[0]),
+    color(backgroundGradient[1])
+  );
 
   // stars
   stars.updateStars();
   stars.drawStars();
-  
+
   // draw mountains
   mountains.drawAllMontains();
 
@@ -436,7 +459,7 @@ window.draw = () => {
     rainStreak.update(timeElapsed);
     rainStreak.draw(displayWidth, displayHeight);
   });
-}
+};
 
 export function start() {
   console.log('starting visuals');
