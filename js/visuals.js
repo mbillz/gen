@@ -31,16 +31,14 @@ const rainPalletteB = [
   '#73a942',
 ]
 
-var starOriginPoint;
-const maxStarAlpha = 255;
-const minStarAlpha = 50;
-
 /* @Matt check out all of these constants to twiddle with things in the scene */
 
 /* Stars */
 const numStars = 500; // Performance-critical
 const starsMinWidth = 1;
 const starsMaxWidth = 3;
+const maxStarAlpha = 255;
+const minStarAlpha = 50;
 
 /* Rain */
 const numRainStreaks = 500; // Performance-critical
@@ -62,6 +60,7 @@ var aurora;
 var startTime;
 var timeElapsed;
 var rainStreaks;
+var starOriginPoint;
 
 function getVibeInterpolation() {
   /* @Matt, this is the "vibe interpolation" between the modes. It's all gradual interpolation.
