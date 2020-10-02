@@ -57,13 +57,13 @@ const minStarAlpha = 50;
 const starRotationSpeed = 0.0005 * Math.PI;
 
 /* Rain */
-const numRainStreaks = 500; // Performance-critical
+const numRainStreaks = 200; // Performance-critical
 const numRainGhostLines = 1; // Performance-critical
 const maxRainThickness = 3;
 const maxRainLength = 0.05; // as a portion of screen height
 const minRainVelocity = 0.05;
 const maxRainVelocity = 0.15;
-const minRainProbability = 0.025;
+const minRainProbability = 0.1;
 
 /* Aurora */
 const numAuroraLayers = 100; // Performance-critical
@@ -90,6 +90,7 @@ var timeElapsed;
 var rainStreaks;
 var starOriginPoint;
 var gradientBackground;
+var rainSwellFactor = 1.0;
 
 function getVibeInterpolation() {
   /* @Matt, this is the "vibe interpolation" between the modes. It's all gradual interpolation.
@@ -265,7 +266,7 @@ class RainStreak {
   }
 
   get thickness() {
-    return maxRainThickness * this.velocityNormalized;
+    return maxRainThickness * this.velocityNormalized * rainSwellFactor;
   }
 
   get averageRainVelocity() {
@@ -456,6 +457,8 @@ window.draw = () => {
   // aurora
   aurora.drawEnd(true);
 
+  rainSwellFactor = 0.75 * (rainSwellFactor - 1.0) + 1;
+
   // rain
   _.forEach(rainStreaks, (rainStreak) => {
     rainStreak.update(timeElapsed);
@@ -466,3 +469,14 @@ window.draw = () => {
 export function start() {
   console.log('starting visuals');
 }
+
+export function swellRain() {
+  rainSwellFactor = 5.0;
+}
+
+const bpm = 100;
+const numBeatsPerSwell = 4; // swell rain on every fourth beat
+const millisPerBeat = 60 * 1000 / bpm;
+setInterval(() => {
+  swellRain();
+}, numBeatsPerSwell * millisPerBeat);
