@@ -52,7 +52,7 @@ const minStarAlpha = 50;
 
 /* Rain */
 const numRainStreaks = 500; // Performance-critical
-const numRainGhostLines = 2; // Performance-critical
+const numRainGhostLines = 1; // Performance-critical
 const maxRainThickness = 5;
 const maxRainLength = 0.1; // as a portion of screen height
 const minRainVelocity = 0.05;
