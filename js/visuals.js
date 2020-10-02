@@ -506,11 +506,9 @@ export function swellRain() {
 }
 
 export function addRain() {
-  setTimeout(() => {
-    shouldFlood = true;
-  }, 10000);
+  shouldFlood = true;
 
   setTimeout(() => {
     shouldFlood = false;
-  }, 30000);
+  }, 28000);
 }
