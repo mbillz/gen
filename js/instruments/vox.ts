@@ -1,8 +1,8 @@
 import { Player, Panner } from 'tone';
 
-import vox1 from '../../static/samples/vox_C.mp3';
-import vox2 from '../../static/samples/vox_G2.mp3';
-import vox3 from '../../static/samples/vox_G3.mp3';
+import vox1 from '../../static/samples/vox/vox_C.mp3';
+import vox2 from '../../static/samples/vox/vox_G2.mp3';
+import vox3 from '../../static/samples/vox/vox_G3.mp3';
 
 const playRandomVox = () => {
   const players = [vox1Player, vox2Player, vox3Player];
