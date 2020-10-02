@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+/* @Matt check out all of these constants to twiddle with things in the scene */
+
 const backgroundGradient = [
   '#03071e',
   '#01030F',
@@ -41,14 +43,13 @@ const rainPalletteB = [
   '#73a942',
 ]
 
-/* @Matt check out all of these constants to twiddle with things in the scene */
-
 /* Stars */
-const numStars = 750; // Performance-critical
+const numStars = 1000; // Performance-critical
 const starsMinWidth = 1;
 const starsMaxWidth = 3;
 const maxStarAlpha = 255;
 const minStarAlpha = 50;
+const starRotationSpeed = 0.0005 * Math.PI;
 
 /* Rain */
 const numRainStreaks = 500; // Performance-critical
@@ -166,18 +167,14 @@ class AuroraLine {
 };
 
 class Stars { 
-  constructor(nStars, minSize, maxSize) {
-    this.nStars = nStars;
-    this.minSize = minSize;
-    this.maxSize = maxSize;
+  constructor() {
     this.starPoints = this.createStars();
-
     this.twinkleSpeed = 0.001 * Math.random() + 0.0005;
   }
 
   createStars() {
     let curStarPoints = []
-    for (var i=0; i < this.nStars; i++) {
+    for (var i=0; i < numStars; i++) {
       curStarPoints.push(this.generateNewStarPoint());
     }
     return curStarPoints;
@@ -187,13 +184,13 @@ class Stars {
     // multiply by 1.5 so that our star grid is larger than the bounding box
     // this avoids any "holes" as the scene rotates about the origin
     let x = width * 2 * (Math.random() - 0.5); // TODO: If we bring back rotation, make this larger
-    let y = height * Math.random(); // TODO: If we bring back rotation, make this larger
-    let r = this.minSize + (this.maxSize - this.minSize) * Math.random();
+    let y = height * 2 * (Math.random() - 0.5); // TODO: If we bring back rotation, make this larger
+    let r = starsMinWidth + (starsMaxWidth - starsMinWidth) * Math.random();
     return {x: x, y: y, r: r};
   }
 
   drawStars() {
-    for (var i=0; i < this.nStars; i++) {
+    for (var i=0; i < numStars; i++) {
       let curPoints = this.starPoints[i];
       let c = color(255, 255, 255);
 
@@ -227,9 +224,8 @@ class Stars {
 
   // rotate stars around origin
   updateStars() {
-    const starRotationAngle = 0.0000002 * timeElapsed;
-    for (var i=0; i < this.nStars; i++) {
-      this.rotatePoint(this.starPoints[i], starRotationAngle, starOriginPoint)
+    for (var i = 0; i < numStars; i++) {
+      this.rotatePoint(this.starPoints[i], starRotationSpeed, starOriginPoint)
     }
   }
 };
@@ -391,7 +387,6 @@ window.setup = () => {
   startTime = Date.now();
   timeElapsed = Date.now() - startTime;
 
-  frameRate(10); // TODO: See if this is the max? If we're rastering to video, we can set to 60
   createCanvas(displayWidth, displayHeight);
   smooth();
   noFill();
@@ -402,9 +397,8 @@ window.setup = () => {
   let p4 = { x: 1.3 * width, y: 0.4 * height };
   aurora = new AuroraLine([p1, p2, p3, p4]);
   mountains = new Mountains();
-  stars = new Stars(numStars, starsMinWidth, starsMaxWidth);
-  starOriginPoint = {x: 0.75 * width, y: 0.5 * height};
-  console.log(stars.starPoints.slice(0, 50));
+  stars = new Stars();
+  starOriginPoint = {x: 0.5 * width, y: 0.5 * height};
     
   rainStreaks = _.map(_.range(numRainStreaks), () => {
     return new RainStreak();
@@ -428,7 +422,7 @@ window.draw = () => {
   drawBackgroundGradient(color(backgroundGradient[0]), color(backgroundGradient[1]));
 
   // stars
-  // stars.updateStars(); // we removed this, because we don't need to rotate the stars, just twinkle
+  stars.updateStars();
   stars.drawStars();
   
   // draw mountains
